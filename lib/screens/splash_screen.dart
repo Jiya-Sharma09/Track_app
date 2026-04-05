@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
         opacity = 1.0;
       });
     });
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 5), () {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

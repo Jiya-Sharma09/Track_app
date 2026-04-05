@@ -6,7 +6,7 @@ class TopLeftCurve extends CustomClipper<Path>{
     Path path = Path();
     path.moveTo(0, size.height);
 
-    path.quadraticBezierTo(size.width*0.75, size.height + 10, size.width*0.75, 0);
+    path.quadraticBezierTo(size.width*0.75, size.height + 10, size.width, 0);
     path.lineTo(0, 0);
     path.close();
     return path;
