@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:track_app/ui_feature/top_left_curve.dart';
 import 'package:track_app/ui_feature/custom_text_field.dart';
+import 'sign_up_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -19,14 +20,16 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Color.fromARGB(253, 247, 222, 210),
       body: Column(
         children: [
-          ClipPath(
+          Align(
+            alignment: Alignment.centerLeft,
+            child : ClipPath(
             clipper: TopLeftCurve(),
             child: Container(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery.of(context).size.width*0.75,
               height: MediaQuery.of(context).size.height * 0.25,
               color: Color.fromARGB(194, 239, 135, 87),
               child: Align(
-                alignment: Alignment(-0.6, 0),
+                alignment: Alignment(-0.6, 0.6),
                 child: Text(
                   "Login",
                   style: TextStyle(
@@ -37,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
+          ),),
           SizedBox(height: MediaQuery.of(context).size.height * 0.25 * 0.5),
           Form(
             key: _keyy,
@@ -74,6 +77,14 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
+
+          SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.25*0.15,
+                ),
+
+          TextButton(onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (_)=>SignUpScreen()));
+          }, child: Text("Don't have an account ? sign up"))
         ],
       ),
     );
