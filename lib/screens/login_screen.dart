@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:track_app/ui_feature/top_left_curve.dart';
 import 'package:track_app/ui_feature/custom_text_field.dart';
 import 'sign_up_screen.dart';
+import 'package:track_app/ui_feature/colors.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(253, 247, 222, 210),
+      backgroundColor: AppTheme.background,
       body: Column(
         children: [
           Align(
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Container(
               width: MediaQuery.of(context).size.width*0.75,
               height: MediaQuery.of(context).size.height * 0.25,
-              color: Color.fromARGB(194, 239, 135, 87),
+              color: AppTheme.topLeftCurve,
               child: Align(
                 alignment: Alignment(-0.6, 0.6),
                 child: Text(
@@ -35,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize:
                         MediaQuery.of(context).size.height * 0.25 * 0.25 * 0.75,
-                    color: Color.fromARGB(255, 255, 255, 255),
+                    color: AppTheme.heading,
                   ),
                 ),
               ),

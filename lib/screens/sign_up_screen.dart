@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:track_app/ui_feature/colors.dart';
 import 'package:track_app/ui_feature/top_left_curve.dart';
 import 'package:track_app/ui_feature/custom_text_field.dart';
 
@@ -20,7 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(253, 247, 222, 210),
+      backgroundColor: AppTheme.background,
       body: Column(
         children: [
           // Top curved header
@@ -31,14 +32,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Container(
                 width: width * 0.75,
                 height: height * 0.25,
-                color: Color.fromARGB(194, 239, 135, 87),
+                color: AppTheme.topLeftCurve,
                 child: Align(
                   alignment: Alignment(-0.6, 0.6),
                   child: Text(
                     "Sign Up",
                     style: TextStyle(
                       fontSize: height * 0.25 * 0.25 * 0.75,
-                      color: Colors.white,
+                      color: AppTheme.white
                     ),
                   ),
                 ),
