@@ -32,7 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Container(
                 width: width * 0.75,
                 height: height * 0.25,
-                color: AppTheme.topLeftCurve,
+                color: AppTheme.primaryDark1,
                 child: Align(
                   alignment: Alignment(-0.6, 0.6),
                   child: Text(

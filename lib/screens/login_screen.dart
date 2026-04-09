@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:track_app/screens/home_screen.dart';
 import 'package:track_app/ui_feature/top_left_curve.dart';
 import 'package:track_app/ui_feature/custom_text_field.dart';
 import 'sign_up_screen.dart';
 import 'package:track_app/ui_feature/colors.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -14,6 +18,33 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isObscure = true;
+  final storage = FlutterSecureStorage();
+
+  Future<void> login(String email, String password) async {
+    final urlForLogin = Uri.parse(""); // API for login
+    try {
+      final response = await http.post(
+        urlForLogin,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({  // sending json string !
+            "email": email,
+            "password": password,
+          }),
+        
+      );
+      // now handling responses :
+      if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+        // now store the JWT !! 
+        // store in secure storage (rather than shared preferences as it is more secure)
+        await storage.write(key: "token", value: data["token"]); 
+      } else {
+        throw Exception("Error occured, Please try again !");
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,25 +54,29 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child : ClipPath(
-            clipper: TopLeftCurve(),
-            child: Container(
-              width: MediaQuery.of(context).size.width*0.75,
-              height: MediaQuery.of(context).size.height * 0.25,
-              color: AppTheme.topLeftCurve,
-              child: Align(
-                alignment: Alignment(-0.6, 0.6),
-                child: Text(
-                  "Login",
-                  style: TextStyle(
-                    fontSize:
-                        MediaQuery.of(context).size.height * 0.25 * 0.25 * 0.75,
-                    color: AppTheme.heading,
+            child: ClipPath(
+              clipper: TopLeftCurve(),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.75,
+                height: MediaQuery.of(context).size.height * 0.25,
+                color: AppTheme.primaryDark1,
+                child: Align(
+                  alignment: Alignment(-0.6, 0.6),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(
+                      fontSize:
+                          MediaQuery.of(context).size.height *
+                          0.25 *
+                          0.25 *
+                          0.75,
+                      color: AppTheme.heading,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),),
+          ),
           SizedBox(height: MediaQuery.of(context).size.height * 0.25 * 0.5),
           Form(
             key: _keyy,
@@ -56,9 +91,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     controllerText: emailController,
                   ),
                 ),
-                
+
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.25*0.05,
+                  height: MediaQuery.of(context).size.height * 0.25 * 0.05,
                 ),
 
                 SizedBox(
@@ -71,21 +106,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.25*0.15,
+                  height: MediaQuery.of(context).size.height * 0.25 * 0.15,
                 ),
                 // Login button
-                ElevatedButton(onPressed: () {}, child: Text("Login")),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => HomeScreen()),
+                    );
+                  },
+                  child: Text("Login"),
+                ),
               ],
             ),
           ),
 
-          SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.25*0.15,
-                ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.25 * 0.15),
 
-          TextButton(onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (_)=>SignUpScreen()));
-          }, child: Text("Don't have an account ? sign up"))
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => SignUpScreen()),
+              );
+            },
+            child: Text("Don't have an account ? sign up"),
+          ),
         ],
       ),
     );

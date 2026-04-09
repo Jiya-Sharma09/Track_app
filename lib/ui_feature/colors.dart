@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // TODO : replace the colors I choose later to add a pop of color on the top of primary theme
-  static const Color primary = Color(0xFF7F5AF0);
-  static const Color secondary = Color.fromARGB(255, 187, 235, 215);
-  static const Color accent = Color(0xFFFF8BA7);
 
-  // background : 
+  // 🌄 Background
   static const Color background = Color.fromARGB(253, 247, 222, 210);
 
-  // text heading 
+  // 📝 Text
   static const Color heading = Color.fromARGB(252, 95, 31, 2);
 
-  //top left curve : 
-  static const Color topLeftCurve =  Color.fromARGB(194, 239, 135, 87);
+  // 🎨 Primary (your main brand color)
+  static const Color primary = Color(0xFFEF8757);
 
-  // Neutral colors
+  // 🌑 Dark variants (interaction, active states)
+  static const Color primaryDark1 = Color(0xFFD76F45);
+  static const Color primaryDark2 = Color(0xFFB85C38);
+  static const Color primaryDark3 = Color(0xFF94472A);
+
+  // 🌕 Light variants (backgrounds, inactive UI)
+  static const Color primaryLight1 = Color(0xFFF2A07A);
+  static const Color primaryLight2 = Color(0xFFF6B79B);
+  static const Color primaryLight3 = Color(0xFFFBE1D6);
+
+  // ⚪ Neutral colors
   static const Color white = Colors.white;
   static const Color black = Colors.black;
 
@@ -24,6 +30,6 @@ class AppTheme {
   static const Color grey500 = Color(0xFF6B7280);
   static const Color grey800 = Color(0xFF1F2937);
 
-  // Error / status
+  // ❌ Error / status
   static const Color error = Color(0xFFEF4444);
 }
