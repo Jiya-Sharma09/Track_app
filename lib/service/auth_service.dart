@@ -8,6 +8,7 @@ import 'package:track_app/service/token_storage.dart';
 // it then calls the saveToken function to save the token.
 
 class AuthService {
+  final _Storage = TokenStorage();
   Future<void> login(String email, String password) async {
     final urlForLogin = Uri.parse(""); // TODO : place the API for login!
     try {
@@ -23,8 +24,7 @@ class AuthService {
       );
 
       // now handling responses :
-      Map<String, dynamic> data =
-          {}; // TODO : read why not just "dynamic data ;"
+      Map<String, dynamic> data = {}; // TODO : read why not just "dynamic data ;"
       try {
         data = jsonDecode(response.body);
       } catch (_) {
@@ -33,8 +33,10 @@ class AuthService {
       if (response.statusCode == 200) {
         // now store the JWT !!
         // store in secure storage (rather than shared preferences as it is more secure)
-        if (data["token"] != null && !data["token"].isEmpty) {
-          await TokenStorage().saveToken(data["token"]);
+        if ((data["token"] != null) &&
+            (data["token"] is String) &&
+            (!data["token"].isEmpty)) {
+          await _Storage.saveToken(data["token"]);
         } else {
           throw Exception("Token not found. Try Logging in again.");
         }
