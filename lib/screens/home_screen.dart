@@ -16,6 +16,18 @@ class _StateHomeScreen extends State<HomeScreen> {
   DateTime selectedDate = DateTime.now();
   ToDoList? finalToDoList;
   List<Todo> selectedDateTodo = [];
+  bool isLoading = false;
+
+  // dummy data :
+  static const bool useDummyData =
+      true; // toggle for switching between dummy and real api calls
+  final List<Todo> dummyTodos = [
+    Todo(id: '1', title: 'Buy groceries', isDone: false),
+    Todo(id: '2', title: 'Morning workout', isDone: true),
+    Todo(id: '3', title: 'Read 30 pages', isDone: false),
+    Todo(id: '4', title: 'Team standup call', isDone: true),
+    Todo(id: '5', title: 'Fix login screen bug', isDone: false),
+  ];
 
   @override
   void initState() {
@@ -26,19 +38,74 @@ class _StateHomeScreen extends State<HomeScreen> {
   }
 
   void getToDo(DateTime dateHome) async {
-    try {
-      final _ToDoListTemp = await service.fetchTodoList(dateHome);
-      final _tasklistTemp = await service.fetchTodo(_ToDoListTemp.id);
+    if (useDummyData) {
       setState(() {
-        finalToDoList = _ToDoListTemp;
-        selectedDateTodo = _tasklistTemp;
+        selectedDateTodo = dummyTodos;
+      });
+      return;
+    }
+
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final toDoListTemp = await service.fetchTodoList(dateHome);
+      final tasklistTemp = await service.fetchTodo(toDoListTemp.id);
+      setState(() {
+        finalToDoList = toDoListTemp;
+        selectedDateTodo = tasklistTemp;
+        isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         finalToDoList = null;
         selectedDateTodo = [];
+        isLoading = false;
       });
-      throw ScaffoldMessenger(child: SnackBar(content: Text("Error : $e")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+  }
+
+  // functions for optimistic UI :
+  void deleteToDo(Todo task) async {
+    List<Todo> temp = List.from(selectedDateTodo);
+    setState(() {
+      selectedDateTodo.remove(task);
+    });
+    // api call
+    bool ans = await service.deleteToDoService(task);
+    if (ans) {
+      // do nothing
+    } else {
+      setState(() {
+        selectedDateTodo = temp;
+      });
+      // show error :
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Sorry, task could not be deleted. Try again.")),
+      );
+    }
+  }
+
+  void addToDo(Todo task) {}
+
+  void toggleStatus(Todo task) async {
+    setState(() {
+      task.isDone = !task.isDone;
+    });
+    // task.isDone = !task.isDone;
+    bool ans = await service.toggleStatusService(task);
+    if (ans) {
+    } else {
+      setState(() {
+        task.isDone = !task.isDone;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Sorry, task could not change the status of the task. Try again.")),
+      );
     }
   }
 
@@ -119,6 +186,59 @@ class _StateHomeScreen extends State<HomeScreen> {
           ),
 
           // add draggable screen here :
+          DraggableScrollableSheet(
+            builder: (context, ScrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: AppTheme.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+
+                child: Column(
+                  children: [
+                    // handle:
+                    Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppTheme.grey800,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        height: 5,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                      ),
+                    ),
+
+                    // heading :
+                    Padding(
+                      padding: EdgeInsetsGeometry.all(10),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        color: AppTheme.primary,
+                        child: Text(
+                          "To-Do's",
+                          style: TextStyle(color: AppTheme.heading),
+                        ),
+                      ),
+                    ),
+
+                    // actual list using list view builder:
+                    ListView.builder(
+                      controller: ScrollController,
+
+                      itemCount: selectedDateTodo.length,
+                      itemBuilder: (context, index) {
+                        return isLoading
+                            ? CircularProgressIndicator()
+                            : ListTile();
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
