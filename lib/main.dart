@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:track_app/providers/theme_provider.dart';
 import 'screens/splash_screen.dart';
+import 'package:track_app/ui_feature/theme.dart';
+import 'package:track_app/providers/theme_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+    ],
+    child : const MyApp()
+    ),
+    );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,13 +22,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final materialTheme = MaterialTheme(Theme.of(context).textTheme);
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color.fromARGB(194, 239, 135, 87),
-        ),
-      ),
+      title: 'Track app',
+      theme: materialTheme.light()
+      ,
+      darkTheme: materialTheme.dark(),
+      themeMode: themeProvider.themeMode,
       home: SplashScreen(),
     );
   }

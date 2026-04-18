@@ -7,6 +7,6 @@ class Todo{
  required this.title, required this.isDone});
 
  factory Todo.fromJson(Map<String, dynamic>json){
-  return Todo(id: json['id'], title: json['title'], isDone: json['Completed'] ?? false);
+  return Todo(id: json['id'], title: json['title'], isDone: json['completed'] ?? false);
  }
 }

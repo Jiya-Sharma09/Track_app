@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
 import 'package:track_app/model/todo_list_model.dart';
 import 'package:track_app/screens/login_screen.dart';
-import 'package:track_app/ui_feature/colors.dart';
 import 'package:track_app/service/api_service.dart';
 import 'package:track_app/model/todo_model.dart';
 
@@ -18,9 +17,7 @@ class _StateHomeScreen extends State<HomeScreen> {
   List<Todo> selectedDateTodo = [];
   bool isLoading = false;
 
-  // dummy data :
-  static const bool useDummyData =
-      true; // toggle for switching between dummy and real api calls
+  static const bool useDummyData = true;
   final List<Todo> dummyTodos = [
     Todo(id: '1', title: 'Buy groceries', isDone: false),
     Todo(id: '2', title: 'Morning workout', isDone: true),
@@ -32,9 +29,7 @@ class _StateHomeScreen extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    DateTime today = DateTime.now();
-    // api call for today !
-    getToDo(today);
+    getToDo(DateTime.now());
   }
 
   void getToDo(DateTime dateHome) async {
@@ -46,9 +41,7 @@ class _StateHomeScreen extends State<HomeScreen> {
     }
 
     try {
-      setState(() {
-        isLoading = true;
-      });
+      setState(() => isLoading = true);
       final toDoListTemp = await service.fetchTodoList(dateHome);
       final tasklistTemp = await service.fetchTodo(toDoListTemp.id);
       setState(() {
@@ -63,71 +56,84 @@ class _StateHomeScreen extends State<HomeScreen> {
         selectedDateTodo = [];
         isLoading = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
     }
   }
 
-  // functions for optimistic UI :
   void deleteToDo(Todo task) async {
     List<Todo> temp = List.from(selectedDateTodo);
-    setState(() {
-      selectedDateTodo.remove(task);
-    });
-    // api call
+    setState(() => selectedDateTodo.remove(task));
+
     bool ans = await service.deleteToDoService(task);
-    if (ans) {
-      // do nothing
-    } else {
-      setState(() {
-        selectedDateTodo = temp;
-      });
-      // show error :
+    if (!ans) {
+      setState(() => selectedDateTodo = temp);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Sorry, task could not be deleted. Try again.")),
       );
     }
   }
 
-  void addToDo(Todo task) {}
+  Future<void> addToDo(String? task) async {
+    Todo newTask = Todo(id: "temp", title: task ?? "", isDone: false);
+    setState(() => selectedDateTodo.add(newTask));
+
+    Todo? realTask = await service.addToDoService(newTask);
+    if (realTask == null) {
+      // api failed — roll back
+      setState(() => selectedDateTodo.remove(newTask));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Sorry! Could not add task. Try again.")),
+      );
+    } else {
+      // api succeeded — replace temp task with real one
+      setState(() {
+        final index = selectedDateTodo.indexOf(newTask);
+        selectedDateTodo[index] = realTask;
+      });
+    }
+  }
 
   void toggleStatus(Todo task) async {
-    setState(() {
-      task.isDone = !task.isDone;
-    });
-    // task.isDone = !task.isDone;
+    setState(() => task.isDone = !task.isDone);
+
     bool ans = await service.toggleStatusService(task);
-    if (ans) {
-    } else {
-      setState(() {
-        task.isDone = !task.isDone;
-      });
+    if (!ans) {
+      setState(() => task.isDone = !task.isDone);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Sorry, task could not change the status of the task. Try again.")),
+        SnackBar(content: Text("Sorry, could not update task status. Try again.")),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme; // store once, use everywhere
+
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("To-DOist")),
-        backgroundColor: AppTheme.primary,
+        backgroundColor: scheme.surface,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => addToDo("New Task"),
+          ),
+        ],
       ),
-      backgroundColor: AppTheme.white,
+      backgroundColor: scheme.surface,
       body: Stack(
         children: [
           SingleChildScrollView(
             child: Column(
-              // calender :
               children: [
+                // calendar
                 Padding(
                   padding: EdgeInsetsGeometry.all(4),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryLight3,
+                      color: scheme.primaryContainer,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Padding(
@@ -136,17 +142,19 @@ class _StateHomeScreen extends State<HomeScreen> {
                         initialDate: DateTime.now(),
                         minDate: DateTime(DateTime.now().year - 1),
                         maxDate: DateTime(DateTime.now().year + 1),
-                        activeBackgroundColor: AppTheme.primaryDark1,
-                        inactiveBackgroundColor: AppTheme.primaryLight1,
+                        activeBackgroundColor: scheme.primary,
+                        inactiveBackgroundColor: scheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(14),
                         onDateChange: (value) {
-                          setState(() {});
+                          setState(() => selectedDate = value);
+                          getToDo(value);
                         },
                       ),
                     ),
                   ),
                 ),
 
+                // placeholder stat cards
                 Row(
                   children: [
                     Padding(
@@ -154,24 +162,26 @@ class _StateHomeScreen extends State<HomeScreen> {
                       child: Container(
                         height: MediaQuery.of(context).size.height * 0.25 * 0.5,
                         width: MediaQuery.of(context).size.width * 0.45,
-                        color: Color.fromARGB(255, 255, 182, 211),
+                        decoration: BoxDecoration(
+                          color: scheme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                     Padding(
                       padding: EdgeInsetsGeometry.all(10),
                       child: Container(
-                        decoration: BoxDecoration(
-                          // border: BorderRadius.circular(8),
-                          color: Color.fromARGB(255, 194, 223, 243),
-                        ),
                         height: MediaQuery.of(context).size.height * 0.25 * 0.5,
                         width: MediaQuery.of(context).size.width * 0.45,
+                        decoration: BoxDecoration(
+                          color: scheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ],
                 ),
 
-                // drawer screen !
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -185,55 +195,81 @@ class _StateHomeScreen extends State<HomeScreen> {
             ),
           ),
 
-          // add draggable screen here :
+          // draggable todo sheet
           DraggableScrollableSheet(
-            builder: (context, ScrollController) {
+            initialChildSize: 0.4,
+            minChildSize: 0.2,
+            maxChildSize: 0.85,
+            builder: (context, scrollController) {
               return Container(
                 decoration: BoxDecoration(
-                  color: AppTheme.white,
-                  borderRadius: BorderRadius.circular(10),
+                  color: scheme.surfaceContainerLow,  
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-
                 child: Column(
                   children: [
-                    // handle:
-                    Center(
+                    // drag handle
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.grey800,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
                         height: 5,
                         width: MediaQuery.of(context).size.width * 0.5,
+                        decoration: BoxDecoration(
+                          color: scheme.onSurfaceVariant.withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                     ),
 
-                    // heading :
+                    // heading
                     Padding(
                       padding: EdgeInsetsGeometry.all(10),
                       child: Container(
                         decoration: BoxDecoration(
+                          color: scheme.primaryContainer,
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        color: AppTheme.primary,
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         child: Text(
                           "To-Do's",
-                          style: TextStyle(color: AppTheme.heading),
+                          style: TextStyle(color: scheme.onPrimaryContainer),
                         ),
                       ),
                     ),
 
-                    // actual list using list view builder:
-                    ListView.builder(
-                      controller: ScrollController,
-
-                      itemCount: selectedDateTodo.length,
-                      itemBuilder: (context, index) {
-                        return isLoading
-                            ? CircularProgressIndicator()
-                            : ListTile();
-                      },
-                    ),
+                    // todo list — isLoading check is HERE, not inside itemBuilder
+                    isLoading
+                        ? CircularProgressIndicator()
+                        : Expanded(
+                            child: ListView.builder(
+                              controller: scrollController,
+                              itemCount: selectedDateTodo.length,
+                              itemBuilder: (context, index) {
+                                final todo = selectedDateTodo[index];
+                                return ListTile(
+                                  title: Text(
+                                    todo.title,
+                                    style: TextStyle(
+                                      color: scheme.onSurface,
+                                      decoration: todo.isDone
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                    ),
+                                  ),
+                                  leading: Checkbox(
+                                    value: todo.isDone,
+                                    onChanged: (_) => toggleStatus(todo),
+                                    activeColor: scheme.primary,
+                                  ),
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.delete_outline,
+                                        color: scheme.error),
+                                    onPressed: () => deleteToDo(todo),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                   ],
                 ),
               );

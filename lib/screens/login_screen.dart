@@ -4,7 +4,6 @@ import 'package:track_app/service/auth_service.dart';
 import 'package:track_app/ui_feature/top_left_curve.dart';
 import 'package:track_app/ui_feature/custom_text_field.dart';
 import 'sign_up_screen.dart';
-import 'package:track_app/ui_feature/colors.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -28,8 +27,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme; // store once, use everywhere
+
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: scheme.surface,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -40,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.75,
                   height: MediaQuery.of(context).size.height * 0.25,
-                  color: AppTheme.primaryDark1,
+                  color: scheme.primary,
                   child: Align(
                     alignment: Alignment(-0.6, 0.6),
                     child: Text(
@@ -51,19 +52,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             0.25 *
                             0.25 *
                             0.75,
-                        color: AppTheme.heading,
+                        color: scheme.onPrimary,
                       ),
                     ),
                   ),
                 ),
               ),
             ),
+
             SizedBox(height: MediaQuery.of(context).size.height * 0.25 * 0.5),
+
             Form(
               key: _keyy,
               child: Column(
                 children: [
-                  // e-mail field :
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.75,
                     child: CustomTextField(
@@ -89,20 +91,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.25 * 0.15,
                   ),
-                  // Login button
+
                   ElevatedButton(
-                    onPressed:
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (_) => HomeScreen()),
-                        // );
-                        // TODO: actual login logic :
-                        isLoading
+                    onPressed: 
+                    (){
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+                    },
+                    /*
+                    
+                    
+                    isLoading
                         ? null
                         : () async {
-                            setState(() {
-                              isLoading = true;
-                            });
+                            setState(() => isLoading = true);
 
                             if (_keyy.currentState?.validate() ?? false) {
                               try {
@@ -110,42 +111,36 @@ class _LoginScreenState extends State<LoginScreen> {
                                   emailController.text,
                                   passwordController.text,
                                 );
-                                if (!mounted) {
-                                  // silent bug prevention
-                                  return;
-                                }
+                                if (!mounted) return;
                                 Navigator.pushReplacement(
-                                  // navigating after successful login and token storage !
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => HomeScreen(),
                                   ),
                                 );
                               } catch (e) {
-                                if (!mounted) {
-                                  return;
-                                }
+                                if (!mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Login Failed : $e")),
+                                  SnackBar(content: Text("Login Failed: $e")),
                                 );
                               } finally {
-                                if (mounted) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                }
+                                if (mounted) setState(() => isLoading = false);
                               }
                             } else {
-                              if (mounted) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              }
-                              return;
+                              if (mounted) setState(() => isLoading = false);
                             }
                           },
+                     */
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: scheme.primary,
+                      foregroundColor: scheme.onPrimary,
+                      minimumSize: Size(
+                        MediaQuery.of(context).size.width * 0.75,
+                        48,
+                      ),
+                    ),
                     child: isLoading
-                        ? CircularProgressIndicator()
+                        ? CircularProgressIndicator(color: scheme.onPrimary)
                         : Text("Login"),
                   ),
                 ],
@@ -161,7 +156,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   MaterialPageRoute(builder: (_) => SignUpScreen()),
                 );
               },
-              child: Text("Don't have an account ? sign up"),
+              style: TextButton.styleFrom(
+                foregroundColor: scheme.primary,
+              ),
+              child: Text("Don't have an account? Sign up"),
             ),
           ],
         ),

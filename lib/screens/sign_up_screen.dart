@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:track_app/ui_feature/colors.dart';
 import 'package:track_app/ui_feature/top_left_curve.dart';
 import 'package:track_app/ui_feature/custom_text_field.dart';
 
@@ -15,16 +14,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: scheme.surface,
       body: Column(
         children: [
-          // Top curved header
+          // top curved header
           Align(
             alignment: Alignment.centerLeft,
             child: ClipPath(
@@ -32,14 +42,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Container(
                 width: width * 0.75,
                 height: height * 0.25,
-                color: AppTheme.primaryDark1,
+                color: scheme.primary,
                 child: Align(
                   alignment: Alignment(-0.6, 0.6),
                   child: Text(
                     "Sign Up",
                     style: TextStyle(
                       fontSize: height * 0.25 * 0.25 * 0.75,
-                      color: AppTheme.white
+                      color: scheme.onPrimary,
                     ),
                   ),
                 ),
@@ -49,7 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
           SizedBox(height: height * 0.1),
 
-          // Form
+          // form
           Form(
             key: _formKey,
             child: Column(
@@ -88,10 +98,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(height: height * 0.04),
 
                 ElevatedButton(
-                  onPressed: () {
-                    // TODO: validation + API call
-                  },
-                  child: Text("Sign Up"),
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          // TODO: validation + API call
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: scheme.primary,
+                    foregroundColor: scheme.onPrimary,
+                    minimumSize: Size(width * 0.75, 48),
+                  ),
+                  child: isLoading
+                      ? CircularProgressIndicator(color: scheme.onPrimary)
+                      : Text("Sign Up"),
                 ),
               ],
             ),
@@ -99,11 +118,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
           SizedBox(height: height * 0.05),
 
-          // Navigate back to login
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              foregroundColor: scheme.primary,
+            ),
             child: Text("Already have an account? Login"),
           ),
         ],

@@ -8,7 +8,7 @@ class ToDoList{
 
   factory ToDoList.fromJson(Map<String, dynamic>json){
     return ToDoList(id : json['id'],
-    name : json['name'],
+    name : json['title'],
     date : DateTime.parse(json['date']));
   }
 }
