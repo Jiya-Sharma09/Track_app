@@ -79,7 +79,7 @@ class _StateHomeScreen extends State<HomeScreen> {
     Todo newTask = Todo(id: "temp", title: task ?? "", isDone: false);
     setState(() => selectedDateTodo.add(newTask));
 
-    Todo? realTask = await service.addToDoService(newTask);
+    Todo? realTask = await service.addToDoService(task, finalToDoList!.id);
     if (realTask == null) {
       // api failed — roll back
       setState(() => selectedDateTodo.remove(newTask));

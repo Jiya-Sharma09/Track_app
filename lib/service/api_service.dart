@@ -7,40 +7,13 @@ import 'package:track_app/model/todo_model.dart';
 import 'package:track_app/model/todo_list_model.dart';
 import 'dart:convert';
 import 'package:track_app/service/token_storage.dart';
+import 'config.dart';
 
 class ApiService {
-  // Future<dynamic>? apiPost(Uri url, Map<String, dynamic> m) async {
-  //   // for adding to do's in a particular to do list
-  //   try {
-  //     final jwtToken = await TokenStorage().getToken();
-  //     final response = await http.post(
-  //       url,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": "Bearer : $jwtToken",
-  //       },
-  //       body: {jsonEncode(m)},
-  //     );
-
-  //     // now need to return this response which is in json :
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       return data;
-  //     } else {
-  //       switch (response.statusCode) {
-  //         case 400:
-  //         case 401:
-  //         case 500:
-  //         case 501:
-  //       }
-  //     }
-  //   } catch (e) {
-  //     throw Exception();
-  //   }
-  // }
+  final String baseUrl = Config.baseUrl;
 
   Future<ToDoList> fetchTodoList(DateTime date) async {
-    Uri url = Uri.parse("");
+    Uri url = Uri.parse("$baseUrl/");
     TokenStorage token = TokenStorage();
     String? tokenForCall = await token.getToken();
     //List ToDoList = [];
@@ -90,7 +63,7 @@ class ApiService {
   }
 
   // to add to To-Do list :
-  Future<Todo?> addToDoService(Todo task) async {
+  Future<Todo?> addToDoService(String? title, String ListID) async {
     final Uri url = Uri.parse("");
     TokenStorage token = TokenStorage();
     try {
@@ -101,7 +74,10 @@ class ApiService {
           "Content-Type": "application/json",
           "Authorization": "Bearer $tokenForCall",
         },
-        body: jsonEncode(task),
+        body: {
+          "title" : title,
+          "listId" : ListID
+        },
       );
       if (response.statusCode == 201) {
         final returnedTask = jsonDecode(response.body);
