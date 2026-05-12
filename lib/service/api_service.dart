@@ -74,10 +74,10 @@ class ApiService {
           "Content-Type": "application/json",
           "Authorization": "Bearer $tokenForCall",
         },
-        body: {
+        body: jsonEncode({
           "title" : title,
           "listId" : ListID
-        },
+        }),
       );
       if (response.statusCode == 201) {
         final returnedTask = jsonDecode(response.body);
