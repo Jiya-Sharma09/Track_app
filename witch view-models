@@ -1,0 +1,19 @@
+* [33mc4e3e47[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtodo-provider[m[33m, [m[1;31morigin/view-models[m[33m, [m[1;31morigin/todo-provider[m[33m, [m[1;32mview-models[m[33m)[m feat : adding to do provider
+* [33m8522ec7[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m fix : encode request body as JSON in addToDoService
+* [33m69e8e30[m refract : addToDo
+* [33me2c7e7f[m feat : new color scheme
+* [33m03bd2e8[m[33m ([m[1;31morigin/to-do-service-testing[m[33m, [m[1;31morigin/features[m[33m, [m[1;32mto-do-service-testing[m[33m, [m[1;32mfeatures[m[33m)[m feat: implement todo service operations and optimistic UI - add add, delete, and toggle methods in service layer - integrate service calls in HomeScreen - implement optimistic UI for add/delete/toggle actions - add dummy data for UI testing (API not integrated yet)
+* [33m3638efb[m adding getToDo function in homescreen and initState. API services and state variables updated
+* [33mcdf9aa8[m to do list and to do models
+* [33m8c83367[m changes in services and auth_service and some UI changes in homescreen
+* [33m49bc402[m adding api services and some changes in the color theme followed by corresponding changes in screen
+* [33m2d80dd7[m changes in color in accordance with color.dart file
+* [33m277a794[m adding color theme file
+* [33maafae29[m fixing alignment in login screen and adding navigation. Along with it basic UI of sign up screen
+* [33m9d13492[m adding custom text field and using it in login screen
+* [33mdf06289[m UI feature left corner curve with text and adding this to login screen and logo in splash screen
+* [33mbf86768[m adding animations to splash screen (logo yet to be desinged and added)
+*   [33mbffb5d3[m merge issue resolved !
+[32m|[m[33m\[m  
+[32m|[m * [33mc7cda02[m Initial commit
+* [33mddf6395[m initial commit !!
