@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:track_app/providers/theme_provider.dart';
+import 'package:track_app/providers/todo_provider.dart';
 import 'screens/splash_screen.dart';
 import 'package:track_app/ui_feature/theme.dart';
 import 'package:track_app/providers/theme_provider.dart';
@@ -10,6 +11,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => TodoProvider()),
     ],
     child : const MyApp()
     ),

@@ -12,11 +12,6 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _StateHomeScreen();
 }
 
-/*
- objective now : 
- shift all the business logic to provider
-*/
-
 class _StateHomeScreen extends State<HomeScreen> {
   @override
   void initState() {
@@ -61,8 +56,7 @@ class _StateHomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<TodoProvider>();
-    final scheme = Theme.of(context).colorScheme; // store once, use everywhere
-    // Inside build(), after: final provider = context.watch<TodoProvider>();
+    final scheme = Theme.of(context).colorScheme;
 
     final dailyVm = DailyStatsViewModel(todos: provider.todos);
     final weeklyVm = WeeklyStatsViewModel(weekCache: provider.weekCache);
@@ -79,188 +73,147 @@ class _StateHomeScreen extends State<HomeScreen> {
         ],
       ),
       backgroundColor: scheme.surface,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // ── Calendar ─────────────────────────────────────────────
+            Padding(
+              padding: EdgeInsetsGeometry.all(4),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.25 ,
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Padding(
+                  padding: EdgeInsetsGeometry.all(7),
+                  child: HorizontalWeekCalendar(
+                    initialDate: DateTime.now(),
+                    minDate: DateTime(DateTime.now().year - 1),
+                    maxDate: DateTime(DateTime.now().year + 1),
+                    activeBackgroundColor: scheme.primary,
+                    inactiveBackgroundColor: scheme.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(14),
+                    onDateChange: (value) {
+                      context.read<TodoProvider>().changeSelectedDate(value);
+                      context.read<TodoProvider>().getToDo(value);
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            // ── Stat cards ───────────────────────────────────────────
+            Row(
               children: [
-                // calendar
                 Padding(
-                  padding: EdgeInsetsGeometry.all(4),
+                  padding: EdgeInsetsGeometry.all(10),
                   child: Container(
+                    height: MediaQuery.of(context).size.height * 0.25 * 0.85,
+                    width: MediaQuery.of(context).size.width * 0.45,
                     decoration: BoxDecoration(
-                      color: scheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(14),
+                      color: scheme.secondaryFixed,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Padding(
-                      padding: EdgeInsetsGeometry.all(7),
-                      child: HorizontalWeekCalendar(
-                        initialDate: DateTime.now(),
-                        minDate: DateTime(DateTime.now().year - 1),
-                        maxDate: DateTime(DateTime.now().year + 1),
-                        activeBackgroundColor: scheme.primary,
-                        inactiveBackgroundColor: scheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(14),
-                        onDateChange: (value) {
-                          context.read<TodoProvider>().changeSelectedDate(
-                            value,
-                          );
-                          context.read<TodoProvider>().getToDo(value);
-                        },
-                      ),
+                    child: StatsPieChart(
+                      title: 'Today',
+                      done: dailyVm.done,
+                      pending: dailyVm.pending,
+                      completionPercent: dailyVm.completionPercent,
+                      centerLabel: dailyVm.centerLabel,
+                      summaryLabel: dailyVm.summaryLabel,
+                      hasData: dailyVm.hasData,
                     ),
                   ),
                 ),
-
-                // placeholder stat cards
-                Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsetsGeometry.all(10),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.25 * 0.5,
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        decoration: BoxDecoration(
-                          color: scheme.secondaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: StatsPieChart(
-                          title: 'Today',
-                          done: dailyVm.done,
-                          pending: dailyVm.pending,
-                          completionPercent: dailyVm.completionPercent,
-                          centerLabel: dailyVm.centerLabel,
-                          summaryLabel: dailyVm.summaryLabel,
-                          hasData: dailyVm.hasData,
-                        ),
-                      ),
+                Padding(
+                  padding: EdgeInsetsGeometry.all(10),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.25 * 0.85,
+                    width: MediaQuery.of(context).size.width * 0.45,
+                    decoration: BoxDecoration(
+                      color: scheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    Padding(
-                      padding: EdgeInsetsGeometry.all(10),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.25 * 0.5,
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        decoration: BoxDecoration(
-                          color: scheme.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: StatsPieChart(
-                          title: 'Last 7 Days',
-                          done: weeklyVm.done,
-                          pending: weeklyVm.pending,
-                          completionPercent: weeklyVm.completionPercent,
-                          centerLabel: weeklyVm.centerLabel,
-                          summaryLabel: weeklyVm.summaryLabel,
-                          hasData: weeklyVm.hasData,
-                        ),
-                      ),
+                    child: StatsPieChart(
+                      title: 'Last 7 Days',
+                      done: weeklyVm.done,
+                      pending: weeklyVm.pending,
+                      completionPercent: weeklyVm.completionPercent,
+                      centerLabel: weeklyVm.centerLabel,
+                      summaryLabel: weeklyVm.summaryLabel,
+                      hasData: weeklyVm.hasData,
                     ),
-                  ],
-                ),
-
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => LoginScreen()),
-                    );
-                  },
-                  child: Text("go back to login screen"),
+                  ),
                 ),
               ],
             ),
-          ),
 
-          // draggable todo sheet
-          DraggableScrollableSheet(
-            initialChildSize: 0.4,
-            minChildSize: 0.17,
-            maxChildSize: 0.85,
-            builder: (context, scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: scheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            // ── To-Do's heading ──────────────────────────────────────
+            Padding(
+              padding: EdgeInsetsGeometry.all(10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: scheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Text(
+                    "To-Do's",
+                    style: TextStyle(color: scheme.onPrimaryContainer),
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    // drag handle
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Container(
-                        height: 5,
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        decoration: BoxDecoration(
-                          color: scheme.onSurfaceVariant.withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ),
+              ),
+            ),
 
-                    // heading
-                    Padding(
-                      padding: EdgeInsetsGeometry.all(10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: scheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        child: Text(
-                          "To-Do's",
-                          style: TextStyle(color: scheme.onPrimaryContainer),
-                        ),
-                      ),
+            // ── Todo list ────────────────────────────────────────────
+            provider.isLoading
+                ? Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : Padding(
+                  padding: EdgeInsetsGeometry.all(10),
+                  child : Container(
+                    decoration: BoxDecoration(
+                      color: scheme.secondaryFixed,
                     ),
-
-                    // todo list — isLoading check is HERE, not inside itemBuilder
-                    Expanded(
-                      child: provider.isLoading
-                          ? Center(child: CircularProgressIndicator())
-                          : ListView.builder(
-                              controller: scrollController,
-                              itemCount: provider.todos.length,
-                              itemBuilder: (context, index) {
-                                final todo = provider.todos[index];
-                                return ListTile(
-                                  title: Text(
-                                    todo.title,
-                                    style: TextStyle(
-                                      color: scheme.onSurface,
-                                      decoration: todo.isDone
-                                          ? TextDecoration.lineThrough
-                                          : null,
-                                    ),
-                                  ),
-                                  leading: Checkbox(
-                                    value: todo.isDone,
-                                    onChanged: (_) => context
-                                        .read<TodoProvider>()
-                                        .toggleTodo(todo),
-                                    activeColor: scheme.primary,
-                                  ),
-                                  trailing: IconButton(
-                                    icon: Icon(
-                                      Icons.delete_outline,
-                                      color: scheme.error,
-                                    ),
-                                    onPressed: () => context
-                                        .read<TodoProvider>()
-                                        .deleteTodo(todo),
-                                  ),
-                                );
-                              },
-                            ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+                    child : ListView.builder(
+                    // must disable ListView's own scrolling since it lives
+                    // inside a SingleChildScrollView
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: provider.todos.length,
+                    itemBuilder: (context, index) {
+                      final todo = provider.todos[index];
+                      return ListTile(
+                        title: Text(
+                          todo.title,
+                          style: TextStyle(
+                            color: scheme.onSurface,
+                            decoration:
+                                todo.isDone ? TextDecoration.lineThrough : null,
+                          ),
+                        ),
+                        leading: Checkbox(
+                          value: todo.isDone,
+                          onChanged: (_) =>
+                              context.read<TodoProvider>().toggleTodo(todo),
+                          activeColor: scheme.primary,
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete_outline, color: scheme.error),
+                          onPressed: () =>
+                              context.read<TodoProvider>().deleteTodo(todo),
+                        ),
+                      );
+                    },
+                  ),)
+                  )
+          ],
+        ),
       ),
     );
   }
