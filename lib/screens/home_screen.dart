@@ -80,7 +80,6 @@ class _StateHomeScreen extends State<HomeScreen> {
             Padding(
               padding: EdgeInsetsGeometry.all(4),
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.25 ,
                 decoration: BoxDecoration(
                   color: scheme.primaryContainer,
                   borderRadius: BorderRadius.circular(14),
