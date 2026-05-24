@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
+import 'package:provider/provider.dart';
 import 'package:track_app/model/todo_list_model.dart';
+import 'package:track_app/providers/todo_provider.dart';
 import 'package:track_app/screens/login_screen.dart';
 import 'package:track_app/service/api_service.dart';
 import 'package:track_app/model/todo_model.dart';
@@ -11,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _StateHomeScreen extends State<HomeScreen> {
+  
   ApiService service = ApiService();
   DateTime selectedDate = DateTime.now();
   ToDoList? finalToDoList;
@@ -109,6 +112,7 @@ class _StateHomeScreen extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<TodoProvider>();
     final scheme = Theme.of(context).colorScheme; // store once, use everywhere
 
     return Scaffold(
