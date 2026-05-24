@@ -1,115 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
-import 'package:track_app/model/todo_list_model.dart';
+import 'package:provider/provider.dart';
+import 'package:track_app/providers/todo_provider.dart';
 import 'package:track_app/screens/login_screen.dart';
-import 'package:track_app/service/api_service.dart';
-import 'package:track_app/model/todo_model.dart';
+import 'package:track_app/view/weekly_stats_view_model.dart';
+import 'package:track_app/view/daily_stats_view_model.dart';
+import 'package:track_app/ui_feature/pie_chart.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _StateHomeScreen();
 }
 
+/*
+ objective now : 
+ shift all the business logic to provider
+*/
+
 class _StateHomeScreen extends State<HomeScreen> {
-  ApiService service = ApiService();
-  DateTime selectedDate = DateTime.now();
-  ToDoList? finalToDoList;
-  List<Todo> selectedDateTodo = [];
-  bool isLoading = false;
-
-  static const bool useDummyData = true;
-  final List<Todo> dummyTodos = [
-    Todo(id: '1', title: 'Buy groceries', isDone: false),
-    Todo(id: '2', title: 'Morning workout', isDone: true),
-    Todo(id: '3', title: 'Read 30 pages', isDone: false),
-    Todo(id: '4', title: 'Team standup call', isDone: true),
-    Todo(id: '5', title: 'Fix login screen bug', isDone: false),
-  ];
-
   @override
   void initState() {
     super.initState();
-    getToDo(DateTime.now());
+
+    Future.microtask(
+      () => context.read<TodoProvider>().getToDo(DateTime.now()),
+    );
   }
 
-  void getToDo(DateTime dateHome) async {
-    if (useDummyData) {
-      setState(() {
-        selectedDateTodo = dummyTodos;
-      });
-      return;
-    }
-
-    try {
-      setState(() => isLoading = true);
-      final toDoListTemp = await service.fetchTodoList(dateHome);
-      final tasklistTemp = await service.fetchTodo(toDoListTemp.id);
-      setState(() {
-        finalToDoList = toDoListTemp;
-        selectedDateTodo = tasklistTemp;
-        isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        finalToDoList = null;
-        selectedDateTodo = [];
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
-    }
-  }
-
-  void deleteToDo(Todo task) async {
-    List<Todo> temp = List.from(selectedDateTodo);
-    setState(() => selectedDateTodo.remove(task));
-
-    bool ans = await service.deleteToDoService(task);
-    if (!ans) {
-      setState(() => selectedDateTodo = temp);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Sorry, task could not be deleted. Try again.")),
-      );
-    }
-  }
-
-  Future<void> addToDo(String? task) async {
-    Todo newTask = Todo(id: "temp", title: task ?? "", isDone: false);
-    setState(() => selectedDateTodo.add(newTask));
-
-    Todo? realTask = await service.addToDoService(task, finalToDoList!.id);
-    if (realTask == null) {
-      // api failed — roll back
-      setState(() => selectedDateTodo.remove(newTask));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Sorry! Could not add task. Try again.")),
-      );
-    } else {
-      // api succeeded — replace temp task with real one
-      setState(() {
-        final index = selectedDateTodo.indexOf(newTask);
-        selectedDateTodo[index] = realTask;
-      });
-    }
-  }
-
-  void toggleStatus(Todo task) async {
-    setState(() => task.isDone = !task.isDone);
-
-    bool ans = await service.toggleStatusService(task);
-    if (!ans) {
-      setState(() => task.isDone = !task.isDone);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Sorry, could not update task status. Try again.")),
-      );
-    }
+  void _showAddDialog(BuildContext context) async {
+    final controller = TextEditingController();
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("New Task"),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: InputDecoration(hintText: "Task title"),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              if (controller.text.trim().isNotEmpty) {
+                context.read<TodoProvider>().addTodo(controller.text.trim());
+                Navigator.pop(context);
+              }
+            },
+            child: Text("Add"),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<TodoProvider>();
     final scheme = Theme.of(context).colorScheme; // store once, use everywhere
+    // Inside build(), after: final provider = context.watch<TodoProvider>();
+
+    final dailyVm = DailyStatsViewModel(todos: provider.todos);
+    final weeklyVm = WeeklyStatsViewModel(weekCache: provider.weekCache);
 
     return Scaffold(
       appBar: AppBar(
@@ -118,7 +74,7 @@ class _StateHomeScreen extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => addToDo("New Task"),
+            onPressed: () => _showAddDialog(context),
           ),
         ],
       ),
@@ -146,8 +102,10 @@ class _StateHomeScreen extends State<HomeScreen> {
                         inactiveBackgroundColor: scheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(14),
                         onDateChange: (value) {
-                          setState(() => selectedDate = value);
-                          getToDo(value);
+                          context.read<TodoProvider>().changeSelectedDate(
+                            value,
+                          );
+                          context.read<TodoProvider>().getToDo(value);
                         },
                       ),
                     ),
@@ -166,6 +124,15 @@ class _StateHomeScreen extends State<HomeScreen> {
                           color: scheme.secondaryContainer,
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        child: StatsPieChart(
+                          title: 'Today',
+                          done: dailyVm.done,
+                          pending: dailyVm.pending,
+                          completionPercent: dailyVm.completionPercent,
+                          centerLabel: dailyVm.centerLabel,
+                          summaryLabel: dailyVm.summaryLabel,
+                          hasData: dailyVm.hasData,
+                        ),
                       ),
                     ),
                     Padding(
@@ -176,6 +143,15 @@ class _StateHomeScreen extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           color: scheme.tertiaryContainer,
                           borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: StatsPieChart(
+                          title: 'Last 7 Days',
+                          done: weeklyVm.done,
+                          pending: weeklyVm.pending,
+                          completionPercent: weeklyVm.completionPercent,
+                          centerLabel: weeklyVm.centerLabel,
+                          summaryLabel: weeklyVm.summaryLabel,
+                          hasData: weeklyVm.hasData,
                         ),
                       ),
                     ),
@@ -198,12 +174,12 @@ class _StateHomeScreen extends State<HomeScreen> {
           // draggable todo sheet
           DraggableScrollableSheet(
             initialChildSize: 0.4,
-            minChildSize: 0.2,
+            minChildSize: 0.17,
             maxChildSize: 0.85,
             builder: (context, scrollController) {
               return Container(
                 decoration: BoxDecoration(
-                  color: scheme.surfaceContainerLow,  
+                  color: scheme.surfaceContainerLow,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: Column(
@@ -229,7 +205,10 @@ class _StateHomeScreen extends State<HomeScreen> {
                           color: scheme.primaryContainer,
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         child: Text(
                           "To-Do's",
                           style: TextStyle(color: scheme.onPrimaryContainer),
@@ -238,14 +217,14 @@ class _StateHomeScreen extends State<HomeScreen> {
                     ),
 
                     // todo list — isLoading check is HERE, not inside itemBuilder
-                    isLoading
-                        ? CircularProgressIndicator()
-                        : Expanded(
-                            child: ListView.builder(
+                    Expanded(
+                      child: provider.isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : ListView.builder(
                               controller: scrollController,
-                              itemCount: selectedDateTodo.length,
+                              itemCount: provider.todos.length,
                               itemBuilder: (context, index) {
-                                final todo = selectedDateTodo[index];
+                                final todo = provider.todos[index];
                                 return ListTile(
                                   title: Text(
                                     todo.title,
@@ -258,18 +237,24 @@ class _StateHomeScreen extends State<HomeScreen> {
                                   ),
                                   leading: Checkbox(
                                     value: todo.isDone,
-                                    onChanged: (_) => toggleStatus(todo),
+                                    onChanged: (_) => context
+                                        .read<TodoProvider>()
+                                        .toggleTodo(todo),
                                     activeColor: scheme.primary,
                                   ),
                                   trailing: IconButton(
-                                    icon: Icon(Icons.delete_outline,
-                                        color: scheme.error),
-                                    onPressed: () => deleteToDo(todo),
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                      color: scheme.error,
+                                    ),
+                                    onPressed: () => context
+                                        .read<TodoProvider>()
+                                        .deleteTodo(todo),
                                   ),
                                 );
                               },
                             ),
-                          ),
+                    ),
                   ],
                 ),
               );
