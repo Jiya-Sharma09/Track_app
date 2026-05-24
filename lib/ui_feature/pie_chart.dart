@@ -60,7 +60,7 @@ class StatsPieChart extends StatelessWidget {
                           sections: [
                             PieChartSectionData(
                               value: done.toDouble(),
-                              color: scheme.primary,
+                              color: scheme.tertiary,
                               radius: 18,
                               showTitle: false,
                             ),
