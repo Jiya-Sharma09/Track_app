@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
 import 'package:provider/provider.dart';
 import 'package:track_app/providers/todo_provider.dart';
-import 'package:track_app/screens/login_screen.dart';
+// import 'package:track_app/screens/login_screen.dart';
 import 'package:track_app/view/weekly_stats_view_model.dart';
 import 'package:track_app/view/daily_stats_view_model.dart';
 import 'package:track_app/ui_feature/pie_chart.dart';
@@ -26,7 +26,7 @@ class _StateHomeScreen extends State<HomeScreen> {
     final controller = TextEditingController();
     await showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text("New Task"),
         content: TextField(
           controller: controller,
@@ -35,14 +35,14 @@ class _StateHomeScreen extends State<HomeScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text("Cancel"),
           ),
           TextButton(
             onPressed: () {
               if (controller.text.trim().isNotEmpty) {
                 context.read<TodoProvider>().addTodo(controller.text.trim());
-                Navigator.pop(context);
+                Navigator.pop(dialogContext);
               }
             },
             child: Text("Add"),
@@ -85,7 +85,7 @@ class _StateHomeScreen extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Padding(
-                  padding: EdgeInsetsGeometry.all(7),
+                  padding: EdgeInsetsGeometry.all(10),
                   child: HorizontalWeekCalendar(
                     initialDate: DateTime.now(),
                     minDate: DateTime(DateTime.now().year - 1),
