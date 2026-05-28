@@ -117,7 +117,7 @@ class _StateHomeScreen extends State<HomeScreen> {
                     minDate: DateTime(DateTime.now().year - 1),
                     maxDate: DateTime(DateTime.now().year + 1),
                     activeBackgroundColor: scheme.primary,
-                    inactiveBackgroundColor: scheme.surfaceContainerHigh,
+                    inactiveBackgroundColor: scheme.primaryFixed,
                     borderRadius: BorderRadius.circular(14),
                     onDateChange: (value) {
                       context.read<TodoProvider>().changeSelectedDate(value);
