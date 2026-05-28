@@ -90,7 +90,7 @@ class _StateHomeScreen extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("To-DOist")),
-        backgroundColor: scheme.surface,
+        backgroundColor: scheme.primary,
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -107,7 +107,7 @@ class _StateHomeScreen extends State<HomeScreen> {
               padding: EdgeInsetsGeometry.all(4),
               child: Container(
                 decoration: BoxDecoration(
-                  color: scheme.primaryContainer,
+                  color: scheme.primaryFixedDim,
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Padding(
@@ -129,79 +129,83 @@ class _StateHomeScreen extends State<HomeScreen> {
             ),
 
             // ── Stat cards ───────────────────────────────────────────
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsetsGeometry.all(10),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.25 * 0.85,
-                    width: MediaQuery.of(context).size.width * 0.45,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          scheme.secondaryFixed,
-                          scheme.secondaryContainer,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: StatsPieChart(
-                      title: 'Today',
-                      done: dailyVm.done,
-                      pending: dailyVm.pending,
-                      completionPercent: dailyVm.completionPercent,
-                      centerLabel: dailyVm.centerLabel,
-                      summaryLabel: dailyVm.summaryLabel,
-                      hasData: dailyVm.hasData,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsetsGeometry.all(10),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.25 * 0.85,
-                    width: MediaQuery.of(context).size.width * 0.45,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          scheme.tertiaryContainer,
-                          scheme.tertiaryFixed,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: StatsPieChart(
-                      title: 'Last 7 Days',
-                      done: weeklyVm.done,
-                      pending: weeklyVm.pending,
-                      completionPercent: weeklyVm.completionPercent,
-                      centerLabel: weeklyVm.centerLabel,
-                      summaryLabel: weeklyVm.summaryLabel,
-                      hasData: weeklyVm.hasData,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
+            // ── Stat cards ───────────────────────────────────────────
+Row(
+  children: [
+    Padding(
+      padding: EdgeInsetsGeometry.all(10),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.25 * 0.85,
+        width: MediaQuery.of(context).size.width * 0.45,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              scheme.onPrimaryFixedVariant,        // ← changed
+              scheme.primary,
+              scheme.primaryFixedDim,  // ← changed
+              scheme.primaryContainer, 
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: StatsPieChart(
+          title: 'Today',
+          done: dailyVm.done,
+          pending: dailyVm.pending,
+          completionPercent: dailyVm.completionPercent,
+          centerLabel: dailyVm.centerLabel,
+          summaryLabel: dailyVm.summaryLabel,
+          hasData: dailyVm.hasData,
+        ),
+      ),
+    ),
+    Padding(
+      padding: EdgeInsetsGeometry.all(10),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.25 * 0.85,
+        width: MediaQuery.of(context).size.width * 0.45,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              // scheme.onTertiaryFixedVariant,        // ← changed
+              scheme.tertiary,
+              scheme.tertiaryFixedDim,  // ← changed
+              scheme.tertiaryContainer,      // ← changed
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: StatsPieChart(
+          title: 'Last 7 Days',
+          done: weeklyVm.done,
+          pending: weeklyVm.pending,
+          completionPercent: weeklyVm.completionPercent,
+          centerLabel: weeklyVm.centerLabel,
+          summaryLabel: weeklyVm.summaryLabel,
+          hasData: weeklyVm.hasData,
+        ),
+      ),
+    ),
+  ],
+),
             // ── To-Do's heading ──────────────────────────────────────
             Padding(
-              padding: EdgeInsetsGeometry.all(10),
+              padding: EdgeInsetsGeometry.all(0),
               child: Align(
-                alignment: Alignment.centerLeft,
+                alignment: Alignment.center,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: scheme.primaryContainer,
+                    // color: scheme.primaryContainer,
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  // padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Text(
                     "To-Do's",
-                    style: TextStyle(color: scheme.onPrimaryContainer),
+                    style: TextStyle(color: scheme.onPrimaryContainer, fontSize: 27,fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -216,7 +220,12 @@ class _StateHomeScreen extends State<HomeScreen> {
                 : Padding(
                     padding: EdgeInsetsGeometry.all(10),
                     child: Container(
-                      decoration: BoxDecoration(color: scheme.secondaryFixed),
+                      width: MediaQuery.of(context).size.width * 0.90,
+                      decoration: BoxDecoration(
+                        color: scheme.secondaryFixed
+                        , 
+                        borderRadius: BorderRadius.circular(10)
+                        ),
                       child: ListView.builder(
                         // must disable ListView's own scrolling since it lives
                         // inside a SingleChildScrollView
