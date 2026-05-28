@@ -7,6 +7,56 @@ import 'package:track_app/view/weekly_stats_view_model.dart';
 import 'package:track_app/view/daily_stats_view_model.dart';
 import 'package:track_app/ui_feature/pie_chart.dart';
 
+class _AddTaskDialog extends StatefulWidget {
+  const _AddTaskDialog();
+
+  @override
+  State<_AddTaskDialog> createState() => _AddTaskDialogState();
+}
+
+class _AddTaskDialogState extends State<_AddTaskDialog> {
+  // Controller lives here → disposed in dispose() → called AFTER pop animation
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose(); // ✅ Safe: widget is fully gone from the tree
+    super.dispose();
+  }
+
+  void _submit() {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
+    context.read<TodoProvider>().addTodo(text);
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('New Task'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: const InputDecoration(hintText: 'Task title'),
+        // Let the user submit by pressing Enter on a keyboard
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: _submit,
+          child: const Text('Add'),
+        ),
+      ],
+    );
+  }
+}
+
 class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _StateHomeScreen();
@@ -22,35 +72,11 @@ class _StateHomeScreen extends State<HomeScreen> {
     );
   }
 
-  void _showAddDialog(BuildContext context) async {
-    final controller = TextEditingController();
-    await showDialog(
+  void _showAddDialog(BuildContext context) {
+    showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text("New Task"),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(hintText: "Task title"),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                context.read<TodoProvider>().addTodo(controller.text.trim());
-                Navigator.pop(dialogContext);
-              }
-            },
-            child: Text("Add"),
-          ),
-        ],
-      ),
+      builder: (dialogContext) => const _AddTaskDialog(),
     );
-    controller.dispose();
   }
 
   @override
@@ -111,7 +137,14 @@ class _StateHomeScreen extends State<HomeScreen> {
                     height: MediaQuery.of(context).size.height * 0.25 * 0.85,
                     width: MediaQuery.of(context).size.width * 0.45,
                     decoration: BoxDecoration(
-                      color: scheme.secondaryFixed,
+                      gradient: LinearGradient(
+                        colors: [
+                          scheme.secondaryFixed,
+                          scheme.secondaryContainer,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: StatsPieChart(
@@ -131,7 +164,14 @@ class _StateHomeScreen extends State<HomeScreen> {
                     height: MediaQuery.of(context).size.height * 0.25 * 0.85,
                     width: MediaQuery.of(context).size.width * 0.45,
                     decoration: BoxDecoration(
-                      color: scheme.tertiaryContainer,
+                      gradient: LinearGradient(
+                        colors: [
+                          scheme.tertiaryContainer,
+                          scheme.tertiaryFixed,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: StatsPieChart(
@@ -174,43 +214,46 @@ class _StateHomeScreen extends State<HomeScreen> {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 : Padding(
-                  padding: EdgeInsetsGeometry.all(10),
-                  child : Container(
-                    decoration: BoxDecoration(
-                      color: scheme.secondaryFixed,
+                    padding: EdgeInsetsGeometry.all(10),
+                    child: Container(
+                      decoration: BoxDecoration(color: scheme.secondaryFixed),
+                      child: ListView.builder(
+                        // must disable ListView's own scrolling since it lives
+                        // inside a SingleChildScrollView
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: provider.todos.length,
+                        itemBuilder: (context, index) {
+                          final todo = provider.todos[index];
+                          return ListTile(
+                            title: Text(
+                              todo.title,
+                              style: TextStyle(
+                                color: scheme.onSurface,
+                                decoration: todo.isDone
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                              ),
+                            ),
+                            leading: Checkbox(
+                              value: todo.isDone,
+                              onChanged: (_) =>
+                                  context.read<TodoProvider>().toggleTodo(todo),
+                              activeColor: scheme.primary,
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(
+                                Icons.delete_outline,
+                                color: scheme.error,
+                              ),
+                              onPressed: () =>
+                                  context.read<TodoProvider>().deleteTodo(todo),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                    child : ListView.builder(
-                    // must disable ListView's own scrolling since it lives
-                    // inside a SingleChildScrollView
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: provider.todos.length,
-                    itemBuilder: (context, index) {
-                      final todo = provider.todos[index];
-                      return ListTile(
-                        title: Text(
-                          todo.title,
-                          style: TextStyle(
-                            color: scheme.onSurface,
-                            decoration:
-                                todo.isDone ? TextDecoration.lineThrough : null,
-                          ),
-                        ),
-                        leading: Checkbox(
-                          value: todo.isDone,
-                          onChanged: (_) =>
-                              context.read<TodoProvider>().toggleTodo(todo),
-                          activeColor: scheme.primary,
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete_outline, color: scheme.error),
-                          onPressed: () =>
-                              context.read<TodoProvider>().deleteTodo(todo),
-                        ),
-                      );
-                    },
-                  ),)
-                  )
+                  ),
           ],
         ),
       ),
