@@ -30,7 +30,7 @@ class StatsPieChart extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerHigh,
+        // color: scheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -40,8 +40,9 @@ class StatsPieChart extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16
                 ),
           ),
           const SizedBox(height: 8),
@@ -60,7 +61,7 @@ class StatsPieChart extends StatelessWidget {
                           sections: [
                             PieChartSectionData(
                               value: done.toDouble(),
-                              color: scheme.tertiary,
+                              color: Color.fromARGB(255, 2, 81, 43),
                               radius: 18,
                               showTitle: false,
                             ),
@@ -99,7 +100,7 @@ class StatsPieChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _LegendDot(color: scheme.primary,        label: '$done done'),
+              _LegendDot(color: Color.fromARGB(255, 2, 81, 43),        label: '$done done'),
               const SizedBox(width: 10),
               _LegendDot(color: scheme.outlineVariant, label: '$pending left'),
             ],
