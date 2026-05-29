@@ -21,7 +21,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return TextFormField(
       obscureText: widget.isPassword ? isObscure : false,
-      style: TextStyle(color: Color.fromARGB(194, 239, 135, 87)),
+      style: TextStyle(color: Color.fromARGB(255, 84, 4, 233)),
       decoration: InputDecoration(
         hintText: widget.hint,
         hintStyle: TextStyle(color: Color.fromARGB(253, 247, 222, 210)),
@@ -34,14 +34,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
-            color: Color.fromARGB(120, 239, 135, 87),
+            color: Color.fromARGB(255, 84, 4, 233),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
-            color: Color.fromARGB(194, 239, 135, 87),
+            color: Color.fromARGB(255, 84, 4, 233),
             width: 2,
           ),
         ),
