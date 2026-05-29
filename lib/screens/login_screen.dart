@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:track_app/screens/home_screen.dart';
+import 'package:track_app/screens/main_screen.dart';
 import 'package:track_app/service/auth_service.dart';
 import 'package:track_app/ui_feature/top_left_curve.dart';
 import 'package:track_app/ui_feature/custom_text_field.dart';
@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ElevatedButton(
                     onPressed: 
                     (){
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => MainScreen()));
                     },
                     /*
                     

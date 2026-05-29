@@ -58,6 +58,7 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen();
   @override
   State<HomeScreen> createState() => _StateHomeScreen();
 }
