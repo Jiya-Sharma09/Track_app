@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
         opacity = 1.0;
       });
     });
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(Duration(seconds: 4), () {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -39,8 +39,8 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: AnimatedOpacity(
           opacity: opacity,
-          duration: Duration(seconds: 1),
-          child: CircleAvatar(radius: 100, backgroundImage: AssetImage("assets/images/logo_temp.jpg")),
+          duration: Duration(seconds: 2),
+          child: CircleAvatar(radius: 100, backgroundImage: AssetImage("assets/images/logo.png")),
         ),
       ),
     );
