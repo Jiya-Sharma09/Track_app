@@ -8,6 +8,7 @@ import 'package:track_app/model/todo_model.dart';
 import 'dart:convert';
 import 'package:track_app/service/token_storage.dart';
 import 'config.dart';
+import 'package:track_app/model/quote_model.dart';
 
 class ApiService {
   final String baseUrl = Config.baseUrl;
@@ -133,4 +134,20 @@ class ApiService {
       return false;
     }
   }
+
+ Future<Quote> fetchQuote() async {
+  final response = await http.get(
+    Uri.parse('https://zenquotes.io/api/random'),
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = jsonDecode(response.body);
+    return Quote(
+      content: data[0]['q'],   // ZenQuotes uses 'q' for quote text
+      author: data[0]['a'],    // and 'a' for author
+    );
+  }
+
+  throw Exception('Failed to fetch quote');
+}
 }

@@ -90,7 +90,7 @@ class StatsScreen extends StatelessWidget {
             // ── Today's numbers ───────────────────────────────────────
             statCard(
               title: 'TODAY',
-              color: scheme.secondaryFixed,
+              color: scheme.primaryContainer,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -108,7 +108,7 @@ class StatsScreen extends StatelessWidget {
             statCard(
               title: "TODAY'S COMPLETION",
               child: SizedBox(
-                height: 160,
+                // height: 160,
                 child: StatsPieChart(
                   title: 'Today',
                   done: dailyVm.done,
@@ -126,7 +126,7 @@ class StatsScreen extends StatelessWidget {
               title: 'LAST 7 DAYS',
               color: scheme.tertiaryContainer,
               child: SizedBox(
-                height: 160,
+                // height: 160,
                 child: StatsPieChart(
                   title: 'Last 7 Days',
                   done: weeklyVm.done,

@@ -100,6 +100,7 @@ class _StateHomeScreen extends State<HomeScreen> {
         ),
         title: Center(child: Text("To-DOist")),
         backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -232,7 +233,7 @@ class _StateHomeScreen extends State<HomeScreen> {
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.90,
                       decoration: BoxDecoration(
-                        color: scheme.secondaryFixed,
+                        color: scheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: ListView.builder(
