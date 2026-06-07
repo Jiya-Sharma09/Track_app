@@ -1,10 +1,6 @@
-// import 'dart:ffi';
-
-// import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:track_app/model/todo_list_model.dart';
 import 'package:track_app/model/todo_model.dart';
-// import 'package:track_app/model/todo_list_model.dart';
 import 'dart:convert';
 import 'package:track_app/service/token_storage.dart';
 import 'config.dart';
@@ -13,141 +9,124 @@ import 'package:track_app/model/quote_model.dart';
 class ApiService {
   final String baseUrl = Config.baseUrl;
 
-  Future<ToDoList> fetchTodoList(DateTime date) async {
-    Uri url = Uri.parse("$baseUrl/");
-    TokenStorage token = TokenStorage();
-    String? tokenForCall = await token.getToken();
-    //List ToDoList = [];
-    dynamic response = await http.get(
-      url,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $tokenForCall",
-      },
-    );
-
-    if (response.statusCode == 200) {
-      dynamic decoded = jsonDecode(response.body);
-
-      final toDoList = ToDoList.fromJson(decoded['data'][0]);
-      return toDoList;
-    } else {
-      throw Exception("try again list not found !");
-    }
+  // ── Auth Headers Helper ──────────────────────────────────────────────
+  Future<Map<String, String>> _headers() async {
+    final token = await TokenStorage().getToken();
+    return {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token",
+    };
   }
 
-  // now fetching the actual To-Do's or tasks inside the to do list
+  // ── Fetch or create list for a given date ────────────────────────────
+  Future<ToDoList> fetchTodoList(DateTime date) async {
+    final dateStr =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
-  Future<List<Todo>> fetchTodo(String id) async {
-    Uri url = Uri.parse("");
-    TokenStorage token = TokenStorage();
-    String? tokenForCall = await token.getToken();
-    //List ToDoList = [];
-    dynamic response = await http.get(
-      url,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $tokenForCall",
-      },
+    final res = await http.get(
+      Uri.parse("$baseUrl/lists/date/$dateStr"),
+      headers: await _headers(),
     );
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> decoded = jsonDecode(response.body);
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body)['data'];
+      if (data.isNotEmpty) return ToDoList.fromJson(data[0]);
+    }
+
+    final createRes = await http.post(
+      Uri.parse("$baseUrl/lists"),
+      headers: await _headers(),
+      body: jsonEncode({"title": "My Tasks", "date": dateStr}),
+    );
+
+    if (createRes.statusCode == 200 || createRes.statusCode == 201) {
+      return ToDoList.fromJson(jsonDecode(createRes.body)['data']);
+    }
+
+    throw Exception("Failed to fetch or create list: ${createRes.statusCode}");
+  }
+
+  // ── Fetch tasks for a list ───────────────────────────────────────────
+  Future<List<Todo>> fetchTodo(String listId) async {
+    final res = await http.get(
+      Uri.parse("$baseUrl/tasks/$listId"),
+      headers: await _headers(),
+    );
+
+    if (res.statusCode == 200) {
+      final decoded = jsonDecode(res.body);
       if (decoded['data'] == null) return [];
-      final List<Todo> tasks = (decoded['data'] as List)
+      return (decoded['data'] as List)
           .map((e) => Todo.fromJson(e as Map<String, dynamic>))
           .toList();
-      return tasks;
-    } else {
-      throw Exception("try again list not found !");
     }
+    throw Exception("Failed to fetch tasks: ${res.statusCode}");
   }
 
-  // to add to To-Do list :
-  Future<Todo?> addToDoService(String? title, String ListID) async {
-    final Uri url = Uri.parse("");
-    TokenStorage token = TokenStorage();
+  // ── Add task ─────────────────────────────────────────────────────────
+  Future<Todo?> addToDoService(String title, String listId) async {
     try {
-      String? tokenForCall = await token.getToken();
-      final response = await http.post(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $tokenForCall",
-        },
-        body: jsonEncode({
-          "title" : title,
-          "listId" : ListID
-        }),
+      final res = await http.post(
+        Uri.parse("$baseUrl/tasks"),
+        headers: await _headers(),
+        body: jsonEncode({"title": title, "listId": listId}),
       );
-      if (response.statusCode == 201) {
-        final returnedTask = jsonDecode(response.body);
-        if(returnedTask == null){
-          return null;
-        }
-        return Todo.fromJson(returnedTask["data"]);
-      } else {
-        return null;
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return Todo.fromJson(jsonDecode(res.body)['data']);
       }
+      return null;
     } catch (e) {
       return null;
     }
   }
 
+  // ── Update task title ────────────────────────────────────────────────
+  Future<bool> updateToDoService(String taskId, String newTitle) async {
+    try {
+      final res = await http.put(
+        Uri.parse("$baseUrl/tasks/$taskId"),
+        headers: await _headers(),
+        body: jsonEncode({"title": newTitle}),
+      );
+      return res.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ── Toggle task ──────────────────────────────────────────────────────
   Future<bool> toggleStatusService(Todo task) async {
-    final Uri url = Uri.parse("");
-    TokenStorage token = TokenStorage();
     try {
-      String? tokenForCall = await token.getToken();
-      final response = await http.put(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $tokenForCall",
-        },
+      final res = await http.put(
+        Uri.parse("$baseUrl/tasks/${task.id}/toggle"),
+        headers: await _headers(),
       );
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        return false;
-      }
+      return res.statusCode == 200;
     } catch (e) {
       return false;
     }
   }
 
+  // ── Delete task ──────────────────────────────────────────────────────
   Future<bool> deleteToDoService(Todo task) async {
-    final Uri url = Uri.parse("");
-    TokenStorage token = TokenStorage();
     try {
-      String? tokenForCall = await token.getToken();
-      final response = await http.delete(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $tokenForCall",
-        },
+      final res = await http.delete(
+        Uri.parse("$baseUrl/tasks/${task.id}"),
+        headers: await _headers(),
       );
-      if (response.statusCode == 200) return true;
-      return false;
+      return res.statusCode == 200;
     } catch (e) {
       return false;
     }
   }
 
- Future<Quote> fetchQuote() async {
-  final response = await http.get(
-    Uri.parse('https://zenquotes.io/api/random'),
-  );
-
-  if (response.statusCode == 200) {
-    final List<dynamic> data = jsonDecode(response.body);
-    return Quote(
-      content: data[0]['q'],   // ZenQuotes uses 'q' for quote text
-      author: data[0]['a'],    // and 'a' for author
-    );
+  // ── Fetch quote ──────────────────────────────────────────────────────
+  Future<Quote> fetchQuote() async {
+    final res = await http.get(Uri.parse('https://zenquotes.io/api/random'));
+    if (res.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(res.body);
+      return Quote(content: data[0]['q'], author: data[0]['a']);
+    }
+    throw Exception('Failed to fetch quote');
   }
-
-  throw Exception('Failed to fetch quote');
-}
 }

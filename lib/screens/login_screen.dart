@@ -4,6 +4,8 @@ import 'package:track_app/service/auth_service.dart';
 import 'package:track_app/ui_feature/top_left_curve.dart';
 import 'package:track_app/ui_feature/custom_text_field.dart';
 import 'sign_up_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:track_app/providers/todo_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -93,14 +95,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   ElevatedButton(
-                    onPressed: 
-                    (){
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => MainScreen()));
-                    },
-                    /*
-                    
-                    
-                    isLoading
+                    onPressed:
+                        // (){
+                        //   Navigator.push(context, MaterialPageRoute(builder: (_) => MainScreen()));
+                        // },
+                        isLoading
                         ? null
                         : () async {
                             setState(() => isLoading = true);
@@ -112,10 +111,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   passwordController.text,
                                 );
                                 if (!mounted) return;
+                                context.read<TodoProvider>().preloadWeekStats(); 
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => HomeScreen(),
+                                    builder: (_) => MainScreen(),
                                   ),
                                 );
                               } catch (e) {
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (mounted) setState(() => isLoading = false);
                             }
                           },
-                     */
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: scheme.primary,
                       foregroundColor: scheme.onPrimary,
@@ -156,9 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   MaterialPageRoute(builder: (_) => SignUpScreen()),
                 );
               },
-              style: TextButton.styleFrom(
-                foregroundColor: scheme.primary,
-              ),
+              style: TextButton.styleFrom(foregroundColor: scheme.primary),
               child: Text("Don't have an account? Sign up"),
             ),
           ],

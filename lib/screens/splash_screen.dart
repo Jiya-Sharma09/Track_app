@@ -1,5 +1,6 @@
 import 'dart:async';
-
+import 'package:track_app/service/token_storage.dart';
+import 'package:track_app/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:track_app/screens/login_screen.dart';
 
@@ -24,11 +25,14 @@ class _SplashScreenState extends State<SplashScreen> {
         opacity = 1.0;
       });
     });
-    Future.delayed(Duration(seconds: 4), () {
+    Future.delayed(const Duration(seconds: 4), () async {
       if (!mounted) return;
+      final token = await TokenStorage().getToken();
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => LoginScreen()),
+        MaterialPageRoute(
+          builder: (_) => token != null ? const MainScreen() : LoginScreen(),
+        ),
       );
     });
   }
@@ -40,7 +44,10 @@ class _SplashScreenState extends State<SplashScreen> {
         child: AnimatedOpacity(
           opacity: opacity,
           duration: Duration(seconds: 2),
-          child: CircleAvatar(radius: 100, backgroundImage: AssetImage("assets/images/logo.png")),
+          child: CircleAvatar(
+            radius: 100,
+            backgroundImage: AssetImage("assets/images/logo.png"),
+          ),
         ),
       ),
     );

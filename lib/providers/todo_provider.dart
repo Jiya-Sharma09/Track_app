@@ -1,5 +1,3 @@
-// lib/providers/todo_provider.dart
-
 import 'package:flutter/material.dart';
 import 'package:track_app/model/todo_model.dart';
 import 'package:track_app/model/todo_list_model.dart';
@@ -19,7 +17,7 @@ class TodoProvider extends ChangeNotifier {
   Map<String, List<Todo>> weekCache = {};
 
   // ── Dummy Data Toggle ────────────────────────────────────────────────
-  static const bool useDummyData = true;
+  static const bool useDummyData = false;
 
   final List<Todo> _dummyTodos = [
     Todo(id: '1', title: 'Buy groceries',       isDone: false),
@@ -32,14 +30,9 @@ class TodoProvider extends ChangeNotifier {
   final Map<String, List<Todo>> _dummyWeekCache = _buildDummyWeekCache();
 
   // ── Static Helpers ───────────────────────────────────────────────────
-
-  /// Converts a DateTime to a "yyyy-MM-dd" string.
-  /// Static so it can be called inside the static _buildDummyWeekCache().
   static String _dateKey(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
-  /// Builds fake 7-day data for UI testing.
-  /// Static because it's called as a field initializer (before the instance exists).
   static Map<String, List<Todo>> _buildDummyWeekCache() {
     final now = DateTime.now();
     final patterns = [
@@ -67,14 +60,12 @@ class TodoProvider extends ChangeNotifier {
   }
 
   // ── Date Helper ──────────────────────────────────────────────────────
-
   void changeSelectedDate(DateTime date) {
     selectedDate = date;
     notifyListeners();
   }
 
   // ─── FETCH ────────────────────────────────────────────────────────────
-
   Future<void> getToDo(DateTime date) async {
     selectedDate = date;
 
@@ -107,23 +98,19 @@ class TodoProvider extends ChangeNotifier {
     }
   }
 
-  /// Fetches the past 6 days silently (no loading spinner, doesn't touch `todos`).
-  /// Called once after login to ensure the weekly chart has real data immediately.
   Future<void> preloadWeekStats() async {
     if (useDummyData) return;
 
     final today = DateTime.now();
     for (int i = 1; i < 7; i++) {
       final date = today.subtract(Duration(days: i));
-      if (weekCache.containsKey(_dateKey(date))) continue; // already cached
+      if (weekCache.containsKey(_dateKey(date))) continue;
 
       try {
         final list  = await _service.fetchTodoList(date);
         final tasks = await _service.fetchTodo(list.id);
         weekCache[_dateKey(date)] = tasks;
-      } catch (_) {
-        // A missing list for a past day is normal — just skip it
-      }
+      } catch (_) {}
     }
     notifyListeners();
   }
@@ -134,7 +121,6 @@ class TodoProvider extends ChangeNotifier {
   }
 
   // ─── ADD ──────────────────────────────────────────────────────────────
-
   Future<void> addTodo(String title) async {
     if (useDummyData) {
       todos.add(Todo(
@@ -143,6 +129,12 @@ class TodoProvider extends ChangeNotifier {
         isDone: false,
       ));
       _syncTodayCache();
+      notifyListeners();
+      return;
+    }
+
+    if (currentList == null) {
+      errorMessage = 'No list loaded. Please wait and try again.';
       notifyListeners();
       return;
     }
@@ -162,8 +154,25 @@ class TodoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── DELETE ───────────────────────────────────────────────────────────
+  // ─── UPDATE ───────────────────────────────────────────────────────────
+  Future<void> updateTodo(Todo task, String newTitle) async {
+    final oldTitle = task.title;
+    task.title = newTitle;
+    _syncTodayCache();
+    notifyListeners();
 
+    if (useDummyData) return;
+
+    final success = await _service.updateToDoService(task.id, newTitle);
+    if (!success) {
+      task.title   = oldTitle;
+      errorMessage = 'Could not update task.';
+      _syncTodayCache();
+      notifyListeners();
+    }
+  }
+
+  // ─── DELETE ───────────────────────────────────────────────────────────
   Future<void> deleteTodo(Todo task) async {
     if (useDummyData) {
       todos.remove(task);
@@ -186,7 +195,6 @@ class TodoProvider extends ChangeNotifier {
   }
 
   // ─── TOGGLE ───────────────────────────────────────────────────────────
-
   Future<void> toggleTodo(Todo task) async {
     task.isDone = !task.isDone;
     _syncTodayCache();
@@ -204,15 +212,11 @@ class TodoProvider extends ChangeNotifier {
   }
 
   // ─── SYNC HELPER ──────────────────────────────────────────────────────
-
-  /// After any mutation (add/delete/toggle), write the current `todos`
-  /// back into weekCache so the chart stays in sync without a refetch.
   void _syncTodayCache() {
     weekCache[_dateKey(selectedDate)] = List.from(todos);
   }
 
   // ─── CLEAR ERROR ──────────────────────────────────────────────────────
-
   void clearError() {
     errorMessage = null;
     notifyListeners();

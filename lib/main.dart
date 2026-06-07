@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
     final materialTheme = MaterialTheme(Theme.of(context).textTheme);
     return MaterialApp(
       title: 'Track app',
+      debugShowCheckedModeBanner: false,
       theme: materialTheme.light()
       ,
       darkTheme: materialTheme.dark(),

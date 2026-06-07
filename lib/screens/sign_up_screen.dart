@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:track_app/ui_feature/top_left_curve.dart';
 import 'package:track_app/ui_feature/custom_text_field.dart';
+import 'package:track_app/service/auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -100,8 +101,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ElevatedButton(
                   onPressed: isLoading
                       ? null
-                      : () {
-                          // TODO: validation + API call
+                      : () async {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            setState(() => isLoading = true);
+                            try {
+                              final auth = AuthService();
+                              await auth.register(
+                                nameController.text.trim(),
+                                emailController.text.trim(),
+                                passwordController.text,
+                              );
+                              if (!mounted) return;
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Account created! Please log in.",
+                                  ),
+                                ),
+                              );
+                            } catch (e) {
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Sign up failed: $e")),
+                              );
+                            } finally {
+                              if (mounted) setState(() => isLoading = false);
+                            }
+                          }
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: scheme.primary,
@@ -120,9 +147,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
           TextButton(
             onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              foregroundColor: scheme.primary,
-            ),
+            style: TextButton.styleFrom(foregroundColor: scheme.primary),
             child: Text("Already have an account? Login"),
           ),
         ],

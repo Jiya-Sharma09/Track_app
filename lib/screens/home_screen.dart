@@ -2,11 +2,72 @@ import 'package:flutter/material.dart';
 import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
 import 'package:provider/provider.dart';
 import 'package:track_app/providers/todo_provider.dart';
-import 'package:track_app/providers/theme_provider.dart'; // ← added
+import 'package:track_app/providers/theme_provider.dart';
 import 'package:track_app/view/weekly_stats_view_model.dart';
 import 'package:track_app/view/daily_stats_view_model.dart';
 import 'package:track_app/ui_feature/pie_chart.dart';
+import 'package:track_app/model/todo_model.dart';
 
+// ── Edit Task Dialog ──────────────────────────────────────────────────
+class _EditTaskDialog extends StatefulWidget {
+  final Todo todo;
+  const _EditTaskDialog({required this.todo});
+
+  @override
+  State<_EditTaskDialog> createState() => _EditTaskDialogState();
+}
+
+class _EditTaskDialogState extends State<_EditTaskDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.todo.title);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final text = _controller.text.trim();
+    if (text.isEmpty || text == widget.todo.title) {
+      Navigator.pop(context);
+      return;
+    }
+    context.read<TodoProvider>().updateTodo(widget.todo, text);
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Task'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: const InputDecoration(hintText: 'Task title'),
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: _submit,
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Add Task Dialog ───────────────────────────────────────────────────
 class _AddTaskDialog extends StatefulWidget {
   const _AddTaskDialog();
 
@@ -55,6 +116,7 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
   }
 }
 
+// ── Home Screen ───────────────────────────────────────────────────────
 class HomeScreen extends StatefulWidget {
   const HomeScreen();
   @override
@@ -77,6 +139,13 @@ class _StateHomeScreen extends State<HomeScreen> {
     );
   }
 
+  void _showEditDialog(BuildContext context, Todo todo) {
+    showDialog(
+      context: context,
+      builder: (_) => _EditTaskDialog(todo: todo),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<TodoProvider>();
@@ -84,13 +153,10 @@ class _StateHomeScreen extends State<HomeScreen> {
 
     final dailyVm = DailyStatsViewModel(todos: provider.todos);
     final weeklyVm = WeeklyStatsViewModel(weekCache: provider.weekCache);
-
-    // Read ThemeProvider — watch so the icon updates instantly on toggle
     final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        // ── Theme toggle on the left ──────────────────────────────
         leading: IconButton(
           icon: Icon(
             themeProvider.isDark ? Icons.light_mode : Icons.dark_mode,
@@ -112,7 +178,7 @@ class _StateHomeScreen extends State<HomeScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ── Calendar ─────────────────────────────────────────────
+            // ── Calendar ───────────────────────────────────────────
             Padding(
               padding: EdgeInsetsGeometry.all(4),
               child: Container(
@@ -138,7 +204,7 @@ class _StateHomeScreen extends State<HomeScreen> {
               ),
             ),
 
-            // ── Stat cards ───────────────────────────────────────────
+            // ── Stat cards ─────────────────────────────────────────
             Row(
               children: [
                 Padding(
@@ -201,7 +267,7 @@ class _StateHomeScreen extends State<HomeScreen> {
               ],
             ),
 
-            // ── To-Do's heading ──────────────────────────────────────
+            // ── To-Do's heading ────────────────────────────────────
             Padding(
               padding: EdgeInsetsGeometry.all(0),
               child: Align(
@@ -222,7 +288,7 @@ class _StateHomeScreen extends State<HomeScreen> {
               ),
             ),
 
-            // ── Todo list ────────────────────────────────────────────
+            // ── Todo list ──────────────────────────────────────────
             provider.isLoading
                 ? Padding(
                     padding: EdgeInsets.symmetric(vertical: 32),
@@ -258,13 +324,27 @@ class _StateHomeScreen extends State<HomeScreen> {
                                   context.read<TodoProvider>().toggleTodo(todo),
                               activeColor: scheme.primary,
                             ),
-                            trailing: IconButton(
-                              icon: Icon(
-                                Icons.delete_outline,
-                                color: scheme.error,
-                              ),
-                              onPressed: () =>
-                                  context.read<TodoProvider>().deleteTodo(todo),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.edit_outlined,
+                                    color: scheme.primary,
+                                  ),
+                                  onPressed: () =>
+                                      _showEditDialog(context, todo),
+                                ),
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: scheme.error,
+                                  ),
+                                  onPressed: () => context
+                                      .read<TodoProvider>()
+                                      .deleteTodo(todo),
+                                ),
+                              ],
                             ),
                           );
                         },

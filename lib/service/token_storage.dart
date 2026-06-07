@@ -9,6 +9,7 @@ class TokenStorage {
 
   Future<String?> getToken() async {
     final tokenreturn = await _storage.read(key: "token");
+    print("TOKEN READ: $tokenreturn");
     if (tokenreturn == null || tokenreturn.isEmpty) {
       return null; // don't add any navigations here
       // this class is only for api service not UI navigation
