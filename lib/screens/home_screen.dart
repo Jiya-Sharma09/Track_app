@@ -210,7 +210,7 @@ class _StateHomeScreen extends State<HomeScreen> {
                 Padding(
                   padding: EdgeInsetsGeometry.all(10),
                   child: Container(
-                    height: MediaQuery.of(context).size.height * 0.25 * 0.85,
+                    // height: MediaQuery.of(context).size.height * 0.25 * 0.85,
                     width: MediaQuery.of(context).size.width * 0.45,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -239,7 +239,7 @@ class _StateHomeScreen extends State<HomeScreen> {
                 Padding(
                   padding: EdgeInsetsGeometry.all(10),
                   child: Container(
-                    height: MediaQuery.of(context).size.height * 0.25 * 0.85,
+                    // height: MediaQuery.of(context).size.height * 0.25 * 0.85,
                     width: MediaQuery.of(context).size.width * 0.45,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
