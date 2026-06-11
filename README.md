@@ -1,4 +1,4 @@
-<img width="1080" height="2340" alt="image" src="https://github.com/user-attachments/assets/bea0fd0e-1284-4a2b-9821-19881782a8d1" /># 🚀 Trackster
+# 🚀 Trackster
 
 Trackster is an AI-powered productivity and task management application built with Flutter. It helps users stay organized, improve productivity, and maintain motivation through intelligent task analysis, progress tracking, and inspirational content.
 
