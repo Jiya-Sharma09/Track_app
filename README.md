@@ -57,22 +57,22 @@ Stay motivated throughout the day:
 
 | Login | Sign Up |
 |---------|---------|
-| ![Login](<img width="" height="10" alt="image" src="https://github.com/user-attachments/assets/f219b0da-1987-40bb-b0cd-49b1e8861a30" />
-) | ![Signup](<img width="" height="50" alt="image" src="https://github.com/user-attachments/assets/7d29429a-e9a9-4fdf-9496-77b599ca14bf" />
+| (<img width="" height="100" alt="image" src="https://github.com/user-attachments/assets/f219b0da-1987-40bb-b0cd-49b1e8861a30" />
+) | (<img width="" height="100" alt="image" src="https://github.com/user-attachments/assets/7d29429a-e9a9-4fdf-9496-77b599ca14bf" />
 ) |
 
 ### Tasks Dashboard
 
 | Tasks Screen |
 |---------|
-| ![Tasks](<img width="" height="10" alt="image" src="https://github.com/user-attachments/assets/c250f954-b9ac-44f2-9d29-f87aca50ed64" />
+| !(<img width="" height="100" alt="image" src="https://github.com/user-attachments/assets/c250f954-b9ac-44f2-9d29-f87aca50ed64" />
 ) |
 
 ### AI Productivity Coach
 
 | AI Coach |
 |---------|
-| ![AI Coach](<img width="" height="10" alt="image" src="https://github.com/user-attachments/assets/45990be8-089e-427c-8f99-63e3ab71c089" />
+| (<img width="" height="100" alt="image" src="https://github.com/user-attachments/assets/45990be8-089e-427c-8f99-63e3ab71c089" />
 ) |
 
 ### Productivity Statistics
