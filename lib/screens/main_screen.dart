@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:track_app/screens/home_screen.dart';   // ← your existing file, unchanged
+import 'package:track_app/screens/ai_screen.dart';
+import 'package:track_app/screens/home_screen.dart';   
 import 'package:track_app/screens/stats_screen.dart';
 import 'package:track_app/screens/quotes_screen.dart';
 
-/// This is the ONLY new wrapper. HomeScreen is untouched.
-/// Point your post-login navigation here instead of HomeScreen.
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -15,12 +14,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  // IndexedStack renders all three pages simultaneously but only
-  // displays the one at [_currentIndex]. This preserves scroll
-  // positions, loaded data, and widget state across tab switches —
-  // much better than rebuilding widgets on every tap.
   final List<Widget> _pages = const [
     HomeScreen(),
+    AiScreen(),
     StatsScreen(),
     QuotesScreen(),
   ];
@@ -30,10 +26,7 @@ class _MainScreenState extends State<MainScreen> {
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      // IndexedStack sits here — no Scaffold inside each child page
-      // should define its own bottomNavigationBar, or it will fight
-      // with this one. The nav bar lives here and nowhere else.
-      body: IndexedStack(
+        body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
@@ -48,6 +41,11 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.check_circle_outline),
             selectedIcon: Icon(Icons.check_circle),
             label: 'Tasks',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.auto_awesome_outlined),
+            selectedIcon: Icon(Icons.auto_awesome),
+            label: 'AI Coach',
           ),
           NavigationDestination(
             icon: Icon(Icons.bar_chart_outlined),

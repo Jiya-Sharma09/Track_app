@@ -3,10 +3,12 @@ import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
 import 'package:provider/provider.dart';
 import 'package:track_app/providers/todo_provider.dart';
 import 'package:track_app/providers/theme_provider.dart';
+import 'package:track_app/screens/login_screen.dart';
 import 'package:track_app/view/weekly_stats_view_model.dart';
 import 'package:track_app/view/daily_stats_view_model.dart';
 import 'package:track_app/ui_feature/pie_chart.dart';
 import 'package:track_app/model/todo_model.dart';
+import 'package:track_app/service/token_storage.dart';
 
 // ── Edit Task Dialog ──────────────────────────────────────────────────
 class _EditTaskDialog extends StatefulWidget {
@@ -58,10 +60,7 @@ class _EditTaskDialogState extends State<_EditTaskDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
-          onPressed: _submit,
-          child: const Text('Save'),
-        ),
+        TextButton(onPressed: _submit, child: const Text('Save')),
       ],
     );
   }
@@ -107,10 +106,7 @@ class _AddTaskDialogState extends State<_AddTaskDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
-          onPressed: _submit,
-          child: const Text('Add'),
-        ),
+        TextButton(onPressed: _submit, child: const Text('Add')),
       ],
     );
   }
@@ -157,13 +153,15 @@ class _StateHomeScreen extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            themeProvider.isDark ? Icons.light_mode : Icons.dark_mode,
-          ),
-          onPressed: () => context.read<ThemeProvider>().toggleTheme(),
-          tooltip: themeProvider.isDark ? 'Light mode' : 'Dark mode',
-        ),
+        leading: 
+            IconButton(
+              icon: Icon(
+                themeProvider.isDark ? Icons.light_mode : Icons.dark_mode,
+              ),
+              onPressed: () => context.read<ThemeProvider>().toggleTheme(),
+              tooltip: themeProvider.isDark ? 'Light mode' : 'Dark mode',
+            ),
+          
         title: Center(child: Text("To-DOist")),
         backgroundColor: scheme.primary,
         foregroundColor: scheme.onPrimary,
@@ -172,6 +170,13 @@ class _StateHomeScreen extends State<HomeScreen> {
             icon: Icon(Icons.add),
             onPressed: () => _showAddDialog(context),
           ),
+          IconButton(
+              icon: Icon(Icons.logout_outlined),
+              onPressed: ()async{
+                await TokenStorage().deleteToken();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>LoginScreen()));
+              },
+            ),
         ],
       ),
       backgroundColor: scheme.surface,
