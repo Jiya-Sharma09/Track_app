@@ -78,25 +78,23 @@ class _AiScreenState extends State<AiScreen> {
   }
 
   Future<void> _refresh() async {
-  final todos = context.read<TodoProvider>().todos;
-  final prompt = _gemini.buildInitialPrompt(todos);
-  
-  setState(() {
-    _messages.clear();  // clear old conversation
-    _gemini.clearHistory(); // clear Gemini's memory too
-    _isLoading = true;
-  });
+    final todos = context.read<TodoProvider>().todos;
+    final prompt = _gemini.buildInitialPrompt(todos);
 
-  final response = await _gemini.sendMessage(prompt);
+    setState(() {
+      _messages.clear(); // clear old conversation
+      _gemini.clearHistory(); // clear Gemini's memory too
+      _isLoading = true;
+    });
 
-  setState(() {
-    _messages.add(ChatMessages(sender: "ai", text: response));
-    _isLoading = false;
-  });
-  _scrollToBottom();
-}
+    final response = await _gemini.sendMessage(prompt);
 
-
+    setState(() {
+      _messages.add(ChatMessages(sender: "ai", text: response));
+      _isLoading = false;
+    });
+    _scrollToBottom();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,11 +107,13 @@ class _AiScreenState extends State<AiScreen> {
         foregroundColor: scheme.onPrimary,
         centerTitle: true,
         // Add to AppBar actions
-         actions: [ IconButton(
+        actions: [
+          IconButton(
             onPressed: _isLoading ? null : _refresh,
             icon: const Icon(Icons.refresh),
             tooltip: 'Re-analyse my tasks',
-          ),]
+          ),
+        ],
       ),
       body: Column(
         children: [

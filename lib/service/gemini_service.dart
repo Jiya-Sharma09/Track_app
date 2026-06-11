@@ -11,13 +11,16 @@ class GeminiService {
   final _chat = <Content>[]; // maintains conversation history for multi-turn
 
   Future<String> sendMessage(String userMessage) async {
-    _chat.add(Content.text(userMessage));
+    try{_chat.add(Content.text(userMessage));
 
     final response = await _model.generateContent(_chat);
     final reply = response.text ?? "No response generated.";
 
     _chat.add(Content.model([TextPart(reply)]));
-    return reply;
+    return reply;}catch(e){
+      _chat.removeLast();
+      return "Something went wrong. Please try again.";
+    }
   }
 
   String buildInitialPrompt(List<Todo> todos) {
