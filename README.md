@@ -56,36 +56,32 @@ Stay motivated throughout the day:
 ### Authentication
 
 | Login | Sign Up |
-|---------|---------|
-| (<img width="" height="100" alt="image" src="https://github.com/user-attachments/assets/f219b0da-1987-40bb-b0cd-49b1e8861a30" />
-) | (<img width="" height="100" alt="image" src="https://github.com/user-attachments/assets/7d29429a-e9a9-4fdf-9496-77b599ca14bf" />
-) |
+|--------|--------|
+| <img src="https://github.com/user-attachments/assets/f219b0da-1987-40bb-b0cd-49b1e8861a30" width="250"> | <img src="https://github.com/user-attachments/assets/7d29429a-e9a9-4fdf-9496-77b599ca14bf" width="250"> |
 
 ### Tasks Dashboard
 
-| Tasks Screen |
-|---------|
-| !(<img width="" height="100" alt="image" src="https://github.com/user-attachments/assets/c250f954-b9ac-44f2-9d29-f87aca50ed64" />
-) |
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c250f954-b9ac-44f2-9d29-f87aca50ed64" width="300">
+</p>
 
 ### AI Productivity Coach
 
-| AI Coach |
-|---------|
-| (<img width="" height="100" alt="image" src="https://github.com/user-attachments/assets/45990be8-089e-427c-8f99-63e3ab71c089" />
-) |
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/45990be8-089e-427c-8f99-63e3ab71c089" width="300">
+</p>
 
 ### Productivity Statistics
 
-| Stats |
-|---------|
-| ![Stats](screenshots/stats.png) |
+<p align="center">
+  <img src="PASTE_STATS_SCREENSHOT_URL_HERE" width="300">
+</p>
 
 ### Inspire
 
-| Inspire |
-|---------|
-| ![Inspire](screenshots/inspire.png) |
+<p align="center">
+  <img src="PASTE_INSPIRE_SCREENSHOT_URL_HERE" width="300">
+</p>
 
 ---
 
