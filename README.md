@@ -58,7 +58,7 @@ Stay motivated throughout the day:
 | Login | Sign Up |
 |---------|---------|
 | ![Login](<img width="" height="10" alt="image" src="https://github.com/user-attachments/assets/f219b0da-1987-40bb-b0cd-49b1e8861a30" />
-) | ![Signup](<img width="1080" height="2340" alt="image" src="https://github.com/user-attachments/assets/7d29429a-e9a9-4fdf-9496-77b599ca14bf" />
+) | ![Signup](<img width="" height="50" alt="image" src="https://github.com/user-attachments/assets/7d29429a-e9a9-4fdf-9496-77b599ca14bf" />
 ) |
 
 ### Tasks Dashboard
