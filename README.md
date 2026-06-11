@@ -74,13 +74,13 @@ Stay motivated throughout the day:
 ### Productivity Statistics
 
 <p align="center">
-  <img src="PASTE_STATS_SCREENSHOT_URL_HERE" width="300">
+  <img src="https://github.com/user-attachments/assets/da33e2ba-fea6-458f-835a-c3c59fde46a7" width="300">
 </p>
 
 ### Inspire
 
 <p align="center">
-  <img src="PASTE_INSPIRE_SCREENSHOT_URL_HERE" width="300">
+  <img src="https://github.com/user-attachments/assets/81510e9c-fc74-4c9a-8f7d-af5e81861809" width="300">
 </p>
 
 ---
