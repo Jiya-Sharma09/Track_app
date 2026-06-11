@@ -1,4 +1,4 @@
-# 🚀 Trackster
+<img width="1080" height="2340" alt="image" src="https://github.com/user-attachments/assets/bea0fd0e-1284-4a2b-9821-19881782a8d1" /># 🚀 Trackster
 
 Trackster is an AI-powered productivity and task management application built with Flutter. It helps users stay organized, improve productivity, and maintain motivation through intelligent task analysis, progress tracking, and inspirational content.
 
@@ -57,19 +57,23 @@ Stay motivated throughout the day:
 
 | Login | Sign Up |
 |---------|---------|
-| ![Login](screenshots/login.png) | ![Signup](screenshots/signup.png) |
+| ![Login](<img width="1080" height="2340" alt="image" src="https://github.com/user-attachments/assets/f219b0da-1987-40bb-b0cd-49b1e8861a30" />
+) | ![Signup](<img width="1080" height="2340" alt="image" src="https://github.com/user-attachments/assets/7d29429a-e9a9-4fdf-9496-77b599ca14bf" />
+) |
 
 ### Tasks Dashboard
 
 | Tasks Screen |
 |---------|
-| ![Tasks](screenshots/tasks.png) |
+| ![Tasks](<img width="738" height="1600" alt="image" src="https://github.com/user-attachments/assets/c250f954-b9ac-44f2-9d29-f87aca50ed64" />
+) |
 
 ### AI Productivity Coach
 
 | AI Coach |
 |---------|
-| ![AI Coach](screenshots/ai_coach.png) |
+| ![AI Coach](<img width="738" height="1600" alt="image" src="https://github.com/user-attachments/assets/45990be8-089e-427c-8f99-63e3ab71c089" />
+) |
 
 ### Productivity Statistics
 
