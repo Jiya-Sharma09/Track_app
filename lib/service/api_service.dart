@@ -129,4 +129,5 @@ class ApiService {
     }
     throw Exception('Failed to fetch quote');
   }
+
 }

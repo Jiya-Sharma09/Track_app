@@ -39,4 +39,6 @@ class GeminiService {
               Keep it concise.
            """;
   }
+
+  void clearHistory() => _chat.clear();
 }

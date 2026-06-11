@@ -69,7 +69,8 @@ class _QuotesScreenState extends State<QuotesScreen>
       backgroundColor: scheme.surface,
       appBar: AppBar(
         title: const Text('Inspire'),
-        backgroundColor: scheme.surface,
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
         centerTitle: true,
       ),
       body: Padding(

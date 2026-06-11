@@ -78,7 +78,8 @@ class StatsScreen extends StatelessWidget {
       backgroundColor: scheme.surface,
       appBar: AppBar(
         title: const Text('Stats'),
-        backgroundColor: scheme.surface,
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
         centerTitle: true,
       ),
       body: SingleChildScrollView(
